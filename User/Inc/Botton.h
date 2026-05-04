@@ -36,7 +36,7 @@ typedef struct Button {
     uint32_t long_press_ms;   // 长按触发时间 (默认 1000ms)
 
     /* --- 方法 --- */
-    void (*Update)(struct Button* self);            // 驱动状态机运转的心脏
+    void (*Update)(struct Button* self);            // 状态机运转更新
     ButtonEvent_t (*GetEvent)(struct Button* self); // 获取按键事件
 } Button;
 

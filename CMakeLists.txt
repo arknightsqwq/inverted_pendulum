@@ -35,12 +35,14 @@ enable_language(C ASM)
 add_executable(${CMAKE_PROJECT_NAME}
         User/Inc/DegreeSensor.h
         User/Src/DegreeSensor.c
-        User/Inc/Encoder.h
-        User/Src/Encoder.c
         User/Src/Delay_us.c
         User/Inc/Delay_us.h
         User/Inc/Botton.h
-        User/Src/Botton.c)
+        User/Src/Botton.c
+        User/Inc/Motor.h
+        User/Src/Motor.c
+        User/Inc/SendOverUart.h
+        User/Src/SendOverUart.c)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
