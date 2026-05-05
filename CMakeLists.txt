@@ -37,8 +37,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Src/DegreeSensor.c
         User/Src/Delay_us.c
         User/Inc/Delay_us.h
-        User/Inc/Botton.h
-        User/Src/Botton.c
+        User/Inc/Button.h
+        User/Src/Button.c
         User/Inc/Motor.h
         User/Src/Motor.c
         User/Inc/SendOverUart.h

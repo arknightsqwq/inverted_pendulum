@@ -1,14 +1,14 @@
 #include "DegreeSensor.h"
 
 // 1. 编写实际的逻辑函数
-static int Get_Degree(struct DegreeSensor* self) {
+static int Get_Degree(DegreeSensor_t* self) {
     int raw = self->adc_buf; // 直接读取 DMA 自动更新的缓存
     self->last_val = (int)(self->alpha * raw + (1.0f - self->alpha) * self->last_val);
     return self->last_val;
 }
 
 // 2. 构造函数：建立绑定关系
-void DegreeSensor_Init(DegreeSensor* self, ADC_HandleTypeDef* hadc) {
+void DegreeSensor_Init(DegreeSensor_t* self, ADC_HandleTypeDef* hadc) {
     self->hadc = hadc;
     self->alpha = 0.3f;
     self->last_val = 0;

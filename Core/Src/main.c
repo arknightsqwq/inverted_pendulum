@@ -27,7 +27,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Motor.h"
+#include "Button.h"
+#include "SendOverUart.h"
+#include "DegreeSensor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +45,10 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+Motor_t motor;
+Button_t buttonA, buttonB, buttonC, buttonD;
+UART_Object uart;
+DegreeSensor_t degreeSensor;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -79,6 +85,11 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  Motor_Init(&motor, &htim2, &htim1, Channel_2,
+   GPIOB, GPIO_PIN_0,
+   GPIOB, GPIO_PIN_0);
+  DegreeSensor_Init(&degreeSensor, &hadc1);
+  UART_Object_Init(&uart, &huart2);
 
   /* USER CODE END Init */
 

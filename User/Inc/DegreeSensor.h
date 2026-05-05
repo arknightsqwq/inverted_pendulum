@@ -3,7 +3,7 @@
 
 #include "stm32f1xx_hal.h"
 
-typedef struct DegreeSensor {
+typedef struct DegreeSensor_t {
     // 属性
     ADC_HandleTypeDef* hadc;
     uint16_t adc_buf;
@@ -11,10 +11,10 @@ typedef struct DegreeSensor {
     int last_val;
 
     // 函数指针，在Init里被指定为某一函数
-    int (*GetDegree)(struct DegreeSensor* self);
-} DegreeSensor;
+    int (*GetDegree)(struct DegreeSensor_t* self);
+} DegreeSensor_t;
 
 // 构造函数：负责把上面的零件组装起来
-void DegreeSensor_Init(DegreeSensor* self, ADC_HandleTypeDef* hadc);
+void DegreeSensor_Init(DegreeSensor_t* self, ADC_HandleTypeDef* hadc);
 
 #endif

@@ -1,15 +1,15 @@
 #include "Motor.h"
 #include <stdlib.h>
 
-static int16_t Get_Location(Motor* self) {
+static int16_t Get_Location(Motor_t* self) {
     // 获取计数器的当前值
     return (int16_t)__HAL_TIM_GET_COUNTER(self->htim_Encoder);
 }
 
-static void Set_PWM(Motor* self, int8_t dutyCycle) {
+static void Set_PWM(Motor_t* self, int8_t dutyCycle) {
     uint32_t arr = __HAL_TIM_GET_AUTORELOAD(self->htim_Driver);
     uint32_t compare_value = abs(dutyCycle) * arr / 100;
-    if (dutyCycle < 0) {
+    if (dutyCycle > 0) {
         HAL_GPIO_WritePin(self->DIR_Port_A, self->DIR_Pin_A, GPIO_PIN_SET);   // 示例
         HAL_GPIO_WritePin(self->DIR_Port_B, self->DIR_Pin_B, GPIO_PIN_RESET);
     } else {
@@ -19,10 +19,10 @@ static void Set_PWM(Motor* self, int8_t dutyCycle) {
     __HAL_TIM_SET_COMPARE(self->htim_Driver, self->Channel, (uint16_t)compare_value);
 }
 
-void Motor_Init(Motor* self,
+void Motor_Init(Motor_t* self,
                 TIM_HandleTypeDef* htim_Encoder,
                 TIM_HandleTypeDef* htim_Driver,
-                uint32_t Channel,
+                uint8_t Channel,
                 GPIO_TypeDef* DIR_Port_A,
                 uint16_t DIR_Pin_A,
                 GPIO_TypeDef* DIR_Port_B,
