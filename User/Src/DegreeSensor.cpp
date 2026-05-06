@@ -16,7 +16,7 @@ void DegreeSensor::start() {
     HAL_ADC_Start_DMA(_hadc, reinterpret_cast<uint32_t*>(&_adc_buf), 1);
 }
 
-int DegreeSensor::get_degree() {
+int DegreeSensor::getdegree() {
     // 读取 DMA 自动更新的缓存
     int raw = static_cast<int>(_adc_buf);
 

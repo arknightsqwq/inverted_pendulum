@@ -19,9 +19,9 @@ public:
 
     /**
      * @brief 获取滤波后的角度值
-     * @return 经过一阶滤波后的 ADC 读数[cite: 4]
+     * @return 经过一阶滤波后的 ADC 读数
      */
-    int get_degree();
+    int getdegree();
 
 private:
     ADC_HandleTypeDef* _hadc; // ADC 硬件句柄

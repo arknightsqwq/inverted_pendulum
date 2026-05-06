@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set_source_files_properties(Core/Src/main.c PROPERTIES LANGUAGE CXX)
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -35,17 +36,18 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
         User/Inc/DegreeSensor.hpp
-        User/Src/DegreeSensor.cPP
+        User/Src/DegreeSensor.cpp
         User/Src/Delay_us.c
         User/Inc/Delay_us.h
-        User/Inc/Button.h
-        User/Src/Button.c
+        User/Inc/Button.hpp
+        User/Src/Button.cpp
         User/Inc/Motor.hpp
         User/Src/Motor.cpp
-        User/Inc/SendOverUart.h
-        User/Src/SendOverUart.c
-        Core/Inc/App.hpp
-        Core/Src/App.cpp)
+        User/Inc/UART_Object.hpp
+        User/Src/UART_Object.cpp
+        User/Src/Interrupt.cpp
+)
+
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)

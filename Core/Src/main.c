@@ -28,9 +28,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Motor.hpp"
-#include "Button.h"
-#include "SendOverUart.h"
 #include "DegreeSensor.hpp"
+#include "Button.hpp"
+#include "UART_Object.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,9 +45,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-Button_t buttonA, buttonB, buttonC, buttonD;
-UART_Object uart;
-DegreeSensor_t degreeSensor;
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -75,7 +73,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  DegreeSensor sensor(&hadc1);
+  Motor motor(&htim2, &htim1, TIM_CHANNEL_1,
+               GPIOB, GPIO_PIN_1,
+               GPIOB, GPIO_PIN_1);
+  UART_Object pclink(&huart2);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -84,11 +86,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  Motor_Init(&motor, &htim2, &htim1, Channel_2,
-   GPIOB, GPIO_PIN_0,
-   GPIOB, GPIO_PIN_0);
-  DegreeSensor_Init(&degreeSensor, &hadc1);
-  UART_Object_Init(&uart, &huart2);
 
   /* USER CODE END Init */
 
@@ -109,7 +106,8 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
+  sensor.start();
+  motor.start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -117,6 +115,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    pclink.Send("hello");
+    pclink.Send(sensor.getdegree());
 
     /* USER CODE BEGIN 3 */
   }
