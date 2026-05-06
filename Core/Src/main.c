@@ -27,10 +27,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Motor.h"
+#include "Motor.hpp"
 #include "Button.h"
 #include "SendOverUart.h"
-#include "DegreeSensor.h"
+#include "DegreeSensor.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +45,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-Motor_t motor;
 Button_t buttonA, buttonB, buttonC, buttonD;
 UART_Object uart;
 DegreeSensor_t degreeSensor;

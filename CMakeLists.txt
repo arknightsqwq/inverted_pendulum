@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 3.22)
 
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
@@ -33,16 +34,18 @@ enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-        User/Inc/DegreeSensor.h
-        User/Src/DegreeSensor.c
+        User/Inc/DegreeSensor.hpp
+        User/Src/DegreeSensor.cPP
         User/Src/Delay_us.c
         User/Inc/Delay_us.h
         User/Inc/Button.h
         User/Src/Button.c
-        User/Inc/Motor.h
-        User/Src/Motor.c
+        User/Inc/Motor.hpp
+        User/Src/Motor.cpp
         User/Inc/SendOverUart.h
-        User/Src/SendOverUart.c)
+        User/Src/SendOverUart.c
+        Core/Inc/App.hpp
+        Core/Src/App.cpp)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
