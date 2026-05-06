@@ -46,6 +46,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Inc/UART_Object.hpp
         User/Src/UART_Object.cpp
         User/Src/Interrupt.cpp
+        User/Inc/PID.hpp
+        User/Src/PID.cpp
 )
 
 
