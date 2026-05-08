@@ -48,6 +48,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Src/Interrupt.cpp
         User/Inc/PID.hpp
         User/Src/PID.cpp
+        User/Inc/global.hpp
+        User/Src/global.cpp
 )
 
 

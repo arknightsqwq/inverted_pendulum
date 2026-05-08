@@ -1,10 +1,8 @@
 #include "stm32f1xx_hal.h"
-#include "Motor.hpp"
-#include "UART_Object.hpp"
+#include "global.hpp"
 
 /* 1. 声明外部定义的 C++ 对象，以便在此文件中访问 */
-extern Motor motor;
-extern UART_Object pclink;
+
 
 /* 2. 必须使用 extern "C" 告诉编译器按照 C 语言规则生成函数名 */
 extern "C" {
@@ -15,8 +13,7 @@ extern "C" {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     // 检查是否是用于控制的定时器（例如 TIM1）
     if (htim->Instance == TIM1) {
-        // 在中断里直接调用 C++ 对象的方法
-        // 注意：中断里的逻辑要尽可能快！
+
         float current_angle = 0.0f; // 假设从传感器获取
         motor.get_location();
     }

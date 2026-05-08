@@ -27,10 +27,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Motor.hpp"
-#include "DegreeSensor.hpp"
-#include "Button.hpp"
-#include "UART_Object.hpp"
+#include "global.hpp"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,11 +71,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  DegreeSensor sensor(&hadc1);
-  Motor motor(&htim2, &htim1, TIM_CHANNEL_1,
-               GPIOB, GPIO_PIN_1,
-               GPIOB, GPIO_PIN_1);
-  UART_Object pclink(&huart2);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/

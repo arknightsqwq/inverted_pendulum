@@ -15,6 +15,7 @@ struct PIDConfig {
 
 class PID {
 public:
+    PIDConfig _cfg;
     /**
      * @brief 构造函数
      * @param config PID 初始配置参数
@@ -40,10 +41,9 @@ public:
     void UpdateConfig(const PIDConfig& new_config);
 
 private:
-    PIDConfig _cfg;
-
     float _integral;
     float _last_error;
 };
+
 
 #endif // PID_HPP
