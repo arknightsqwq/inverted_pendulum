@@ -16,12 +16,27 @@ Motor::Motor(TIM_HandleTypeDef* htim_Encoder,
 }
 
 void Motor::start() {
+    __HAL_TIM_SET_COUNTER(_htim_encoder, 0);
+    _last_count = 0; // 记录值同步清零
     HAL_TIM_Encoder_Start(_htim_encoder, TIM_CHANNEL_ALL);
     HAL_TIM_PWM_Start(_htim_driver, _channel);
 }
 
 int16_t Motor::get_location() const {
     return static_cast<int16_t>(__HAL_TIM_GET_COUNTER(_htim_encoder));
+}
+
+int16_t Motor::get_speed() {
+    // 1. 获取当前位置
+    int16_t current_count = static_cast<int16_t>(__HAL_TIM_GET_COUNTER(_htim_encoder));
+
+    // 2. 计算差值（考虑了 16 位计数器溢出的自动处理）
+    int16_t speed = current_count - _last_count;
+
+    // 3. 更新上一次的值，供下次使用
+    _last_count = current_count;
+
+    return speed;
 }
 
 void Motor::set_pwm(int8_t duty_cycle) {

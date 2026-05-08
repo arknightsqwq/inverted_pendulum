@@ -13,9 +13,9 @@ extern "C" {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     // 检查是否是用于控制的定时器（例如 TIM1）
     if (htim->Instance == TIM1) {
-
-        float current_angle = 0.0f; // 假设从传感器获取
-        motor.get_location();
+        float target_speed = anglePID.Calculate(anglePID._cfg.target, sensor.getdegree());
+        int8_t out_pwm = speedPID.Calculate(target_speed, motor.get_speed());
+        motor.set_pwm(out_pwm);
     }
 }
 

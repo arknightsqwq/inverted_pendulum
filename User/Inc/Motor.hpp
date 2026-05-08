@@ -21,6 +21,9 @@ public:
     // 获取编码器位置
     int16_t get_location() const;
 
+    // 获取速度函数
+    int16_t get_speed();
+
     // 设置 PWM 占空比 (-100 到 100)
     void set_pwm(int8_t duty_cycle);
 
@@ -37,6 +40,8 @@ private:
     uint16_t _dir_pin_a;
     GPIO_TypeDef* _dir_port_b;
     uint16_t _dir_pin_b;
+
+    mutable int16_t _last_count = 0; // 记录上一次的计数值
 };
 
 #endif // MOTOR_HPP

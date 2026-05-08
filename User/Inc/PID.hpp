@@ -11,6 +11,7 @@ struct PIDConfig {
     float out_min;  // 输出下限（如 -100.0f）
     float out_max;  // 输出上限（如 100.0f）
     float i_limit;  // 积分限幅，防止积分饱和
+    int target;
 };
 
 class PID {

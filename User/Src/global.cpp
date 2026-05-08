@@ -31,7 +31,7 @@ Button button3(GPIOB,GPIO_PIN_13,GPIO_PIN_SET);
 Button button4(GPIOB,GPIO_PIN_14,GPIO_PIN_SET);
 
 //PID
-PIDConfig angleloop{0,0,0,0,0,0};
-PIDConfig speedloop{0,0,0,0,0,0};
+PIDConfig angleloop{0,0,0,0,0,0,0};
+PIDConfig speedloop{0,0,0,0,0,0,0};
 PID anglePID(angleloop);
 PID speedPID(speedloop);
