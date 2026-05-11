@@ -40,6 +40,4 @@ void PID::Reset() {
 
 void PID::UpdateConfig(const PIDConfig& new_config) {
     _cfg = new_config;
-}//
-// Created by asus on 2026/5/7.
-//
+}

@@ -1,6 +1,6 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
-#include "adc.h"
+#ifndef GLOBAL_HPP
+#define GLOBAL_HPP
+
 #include "adc.h"
 #include "dma.h"
 #include "i2c.h"
@@ -21,7 +21,10 @@ extern Button button2;
 extern Button button3;
 extern Button button4;
 extern UART_Object pclink;
-extern PID anglePID;
-extern PID speedPID;
 
-#endif GLOBAL_H
+extern PIDConfig angleloop;
+extern PIDConfig positionloop;
+extern PID anglePID;
+extern PID positionPID;
+
+#endif // GLOBAL_HPP

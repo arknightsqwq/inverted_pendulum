@@ -16,7 +16,9 @@ struct PIDConfig {
 
 class PID {
 public:
+    /** 运行时可改（上位机/调试），与 Calculate 使用的参数一致 */
     PIDConfig _cfg;
+
     /**
      * @brief 构造函数
      * @param config PID 初始配置参数
@@ -41,10 +43,11 @@ public:
      */
     void UpdateConfig(const PIDConfig& new_config);
 
+
+
 private:
     float _integral;
     float _last_error;
 };
-
 
 #endif // PID_HPP

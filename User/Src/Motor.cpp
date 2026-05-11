@@ -19,6 +19,7 @@ void Motor::start() {
     __HAL_TIM_SET_COUNTER(_htim_encoder, 0);
     _last_count = 0; // 记录值同步清零
     HAL_TIM_Encoder_Start(_htim_encoder, TIM_CHANNEL_ALL);
+    /* TIM1 仅作 PWM；控制环路节拍由 TIM3 的更新中断在 main 中启动 */
     HAL_TIM_PWM_Start(_htim_driver, _channel);
 }
 
