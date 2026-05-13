@@ -40,7 +40,6 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Src/Delay_us.c
         User/Inc/Delay_us.h
         User/Inc/Button.hpp
-        User/Src/Button.cpp
         User/Inc/Motor.hpp
         User/Src/Motor.cpp
         User/Inc/UART_Object.hpp

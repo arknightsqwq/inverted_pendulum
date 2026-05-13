@@ -9,6 +9,12 @@
 #include "PID.hpp"
 #include "global.hpp"
 
+// 按钮特化声明 — 非公共接口，放在实现文件中
+template <> void Button<1>::processEvent();
+template <> void Button<2>::processEvent();
+template <> void Button<3>::processEvent();
+template <> void Button<4>::processEvent();
+
 //角度传感器
 DegreeSensor sensor(&hadc1);
 
@@ -35,41 +41,41 @@ PID positionPID(positionloop);
 // --- 各按钮事件处理特化 ---
 
 template <>
-void onButtonEvent<1>(Button<1>::Event e) {
-    switch (e) {
-    case Button<1>::SHORT_PRESS: break;
-    case Button<1>::LONG_PRESS:  break;
-    case Button<1>::HOLDING:     break;
-    default:                     break;
+void Button<1>::processEvent() {
+    switch (get_event()) {
+    case SHORT_PRESS: break;
+    case LONG_PRESS:  break;
+    case HOLDING:     break;
+    default:          break;
     }
 }
 
 template <>
-void onButtonEvent<2>(Button<2>::Event e) {
-    switch (e) {
-    case Button<2>::SHORT_PRESS: break;
-    case Button<2>::LONG_PRESS:  break;
-    case Button<2>::HOLDING:     break;
-    default:                     break;
+void Button<2>::processEvent() {
+    switch (get_event()) {
+    case SHORT_PRESS: break;
+    case LONG_PRESS:  break;
+    case HOLDING:     break;
+    default:          break;
     }
 }
 
 template <>
-void onButtonEvent<3>(Button<3>::Event e) {
-    switch (e) {
-    case Button<3>::SHORT_PRESS: break;
-    case Button<3>::LONG_PRESS:  break;
-    case Button<3>::HOLDING:     break;
-    default:                     break;
+void Button<3>::processEvent() {
+    switch (get_event()) {
+    case SHORT_PRESS: break;
+    case LONG_PRESS:  break;
+    case HOLDING:     break;
+    default:          break;
     }
 }
 
 template <>
-void onButtonEvent<4>(Button<4>::Event e) {
-    switch (e) {
-    case Button<4>::SHORT_PRESS: break;
-    case Button<4>::LONG_PRESS:  break;
-    case Button<4>::HOLDING:     break;
-    default:                     break;
+void Button<4>::processEvent() {
+    switch (get_event()) {
+    case SHORT_PRESS: break;
+    case LONG_PRESS:  break;
+    case HOLDING:     break;
+    default:          break;
     }
 }

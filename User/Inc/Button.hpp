@@ -76,7 +76,7 @@ public:
         _holding_interval_ms = holding_interval;
     }
 
-    // 获取事件并转发到 onButtonEvent<ButtonID>，行为在 global.cpp 中特化定义
+    // processEvent 在 global.cpp 中通过特化注入具体业务逻辑
     void processEvent();
 
 private:
@@ -96,13 +96,9 @@ private:
     uint16_t _holding_interval_ms;
 };
 
-// 默认空操作，在 global.cpp 中通过特化注入具体业务逻辑
-template <int ButtonID>
-void onButtonEvent(typename Button<ButtonID>::Event) {}
-
 template <int ButtonID>
 void Button<ButtonID>::processEvent() {
-    onButtonEvent<ButtonID>(get_event());
+    // 默认空操作，在 global.cpp 中通过特化注入具体业务逻辑
 }
 
 template <typename... Buttons>

@@ -20,5 +20,4 @@ extern PIDConfig positionloop;
 extern PID anglePID;
 extern PID positionPID;
 
-
 #endif // GLOBAL_HPP
