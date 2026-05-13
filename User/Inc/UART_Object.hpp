@@ -17,18 +17,18 @@ public:
     /**
      * @brief 发送浮点数（保留4位小数）
      */
-    void Send(float value);
-    void Send(double value);
+    void send(float value);
+    void send(double value);
 
     /**
      * @brief 发送整数
      */
-    void Send(int value);
+    void send(int value);
 
     /**
      * @brief 发送字符串
      */
-    void Send(const char* str);
+    void send(const char* str);
 
 private:
     UART_HandleTypeDef* _huart; // 封装硬件句柄[cite: 3]
