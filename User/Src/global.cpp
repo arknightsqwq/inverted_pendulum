@@ -1,9 +1,6 @@
 #include "adc.h"
-#include "dma.h"
-#include "i2c.h"
 #include "tim.h"
 #include "usart.h"
-#include "gpio.h"
 
 #include "DegreeSensor.hpp"
 #include "Motor.hpp"
@@ -24,13 +21,55 @@ Motor motor(&htim2, &htim1, TIM_CHANNEL_2,
 UART_Object pclink(&huart2);
 
 //按钮
-Button button1(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
-Button button2(GPIOB,GPIO_PIN_8,GPIO_PIN_SET);
-Button button3(GPIOB,GPIO_PIN_13,GPIO_PIN_SET);
-Button button4(GPIOB,GPIO_PIN_14,GPIO_PIN_SET);
+Button<1> button1(GPIOB,GPIO_PIN_5,GPIO_PIN_SET);
+Button<2> button2(GPIOB,GPIO_PIN_8,GPIO_PIN_SET);
+Button<3> button3(GPIOB,GPIO_PIN_13,GPIO_PIN_SET);
+Button<4> button4(GPIOB,GPIO_PIN_14,GPIO_PIN_SET);
 
 //PID
 PIDConfig angleloop{0,0,0,0,0,0,0};
 PIDConfig positionloop{0,0,0,0,0,0,0};
 PID anglePID(angleloop);
 PID positionPID(positionloop);
+
+// --- 各按钮事件处理特化 ---
+
+template <>
+void onButtonEvent<1>(Button<1>::Event e) {
+    switch (e) {
+    case Button<1>::SHORT_PRESS: break;
+    case Button<1>::LONG_PRESS:  break;
+    case Button<1>::HOLDING:     break;
+    default:                     break;
+    }
+}
+
+template <>
+void onButtonEvent<2>(Button<2>::Event e) {
+    switch (e) {
+    case Button<2>::SHORT_PRESS: break;
+    case Button<2>::LONG_PRESS:  break;
+    case Button<2>::HOLDING:     break;
+    default:                     break;
+    }
+}
+
+template <>
+void onButtonEvent<3>(Button<3>::Event e) {
+    switch (e) {
+    case Button<3>::SHORT_PRESS: break;
+    case Button<3>::LONG_PRESS:  break;
+    case Button<3>::HOLDING:     break;
+    default:                     break;
+    }
+}
+
+template <>
+void onButtonEvent<4>(Button<4>::Event e) {
+    switch (e) {
+    case Button<4>::SHORT_PRESS: break;
+    case Button<4>::LONG_PRESS:  break;
+    case Button<4>::HOLDING:     break;
+    default:                     break;
+    }
+}
