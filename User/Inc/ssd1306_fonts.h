@@ -1,7 +1,11 @@
-#ifndef __SSD1306_FONTS_H__
-#define __SSD1306_FONTS_H__
+#ifndef SSD1306_FONTS_H
+#define SSD1306_FONTS_H
 
 #include "ssd1306.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef SSD1306_INCLUDE_FONT_6x8
 extern const SSD1306_Font_t Font_6x8;
@@ -19,11 +23,12 @@ extern const SSD1306_Font_t Font_16x26;
 extern const SSD1306_Font_t Font_16x24;
 #endif
 #ifdef SSD1306_INCLUDE_FONT_16x15
-/** Generated Roboto Thin 15 
- * @copyright Google https://github.com/googlefonts/roboto
- * @license This font is licensed under the Apache License, Version 2.0.
-*/
+/** @brief Roboto Thin 15 比例字体（Apache 2.0 许可, https://github.com/googlefonts/roboto） */
 extern const SSD1306_Font_t Font_16x15;
 #endif
 
-#endif // __SSD1306_FONTS_H__
+#ifdef __cplusplus
+}
+#endif
+
+#endif // SSD1306_FONTS_H

@@ -1,18 +1,16 @@
-#ifndef __SSD1306_TEST_H__
-#define __SSD1306_TEST_H__
+#ifndef SSD1306_TESTS_H
+#define SSD1306_TESTS_H
 
-//#include <_ansi.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define _BEGIN_STD_C extern "C" {
-#define _END_STD_C  }
-
-//_BEGIN_STD_C
-void SSD1306_TestAll(void);
+void ssd1306_TestAll(void);
 void ssd1306_TestBorder(void);
 void ssd1306_TestFonts1(void);
 void ssd1306_TestFonts2(void);
+void ssd1306_TestFonts3(void);
 void ssd1306_TestFPS(void);
-void ssd1306_TestAll(void);
 void ssd1306_TestLine(void);
 void ssd1306_TestRectangle(void);
 void ssd1306_TestRectangleFill(void);
@@ -22,6 +20,8 @@ void ssd1306_TestArc(void);
 void ssd1306_TestPolyline(void);
 void ssd1306_TestDrawBitmap(void);
 
-//_END_STD_C
+#ifdef __cplusplus
+}
+#endif
 
-#endif // __SSD1306_TEST_H__
+#endif // SSD1306_TESTS_H

@@ -1,4 +1,4 @@
-#include "Motor.hpp"
+#include "motor.hpp"
 
 Motor::Motor(TIM_HandleTypeDef* htim_Encoder,
              TIM_HandleTypeDef* htim_Driver,

@@ -28,7 +28,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "global.hpp"
-
+#include "ssd1306.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,6 +113,7 @@ int main(void)
     update_all_buttons(button1, button2, button3, button4);
     process_all_buttons(button1, button2, button3, button4);
     pclink.send("hello");
+    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

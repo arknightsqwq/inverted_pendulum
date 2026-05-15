@@ -1,24 +1,27 @@
 /**
- * This Library was originally written by Olivier Van den Eede (4ilo) in 2016.
- * Some refactoring was done and SPI support was added by Aleksander Alekseev (afiskon) in 2018.
+ * @brief SSD1306 OLED 显示屏驱动库
  *
+ * 基于 afiskon/stm32-ssd1306 移植
  * https://github.com/afiskon/stm32-ssd1306
+ *
+ * 支持 I2C / SPI 双协议
  */
 
-#ifndef __SSD1306_H__
-#define __SSD1306_H__
+#ifndef SSD1306_H
+#define SSD1306_H
 
 #include <stddef.h>
 #include <stdint.h>
-//#include <_ansi.h>
 
-#define _BEGIN_STD_C extern "C" {
-#define _END_STD_C  }
-
-//_BEGIN_STD_C
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "ssd1306_conf.h"
 
+// ============================================================================
+// MCU 系列选择 — 根据 ssd1306_conf.h 中定义的宏引入对应 HAL 头文件
+// ============================================================================
 
 #if defined(STM32WB)
 #include "stm32wbxx_hal.h"
@@ -50,9 +53,12 @@
 #elif defined(STM32C0)
 #include "stm32c0xx_hal.h"
 #else
-#error "SSD1306 library was tested only on STM32F0, STM32F1, STM32F3, STM32F4, STM32F7, STM32L0, STM32L1, STM32L4, STM32H7, STM32G0, STM32G4, STM32WB, STM32C0 MCU families. Please modify ssd1306.h if you know what you are doing. Also please send a pull request if it turns out the library works on other MCU's as well!"
+#error "SSD1306 library was tested only on STM32F0, F1, F3, F4, F7, L0, L1, L4, H7, G0, G4, WB, C0 families"
 #endif
 
+// ============================================================================
+// X 轴偏移（当屏幕横向不从 column 0 开始时使用）
+// ============================================================================
 
 #ifdef SSD1306_X_OFFSET
 #define SSD1306_X_OFFSET_LOWER (SSD1306_X_OFFSET & 0x0F)
@@ -62,46 +68,38 @@
 #define SSD1306_X_OFFSET_UPPER 0
 #endif
 
-/* vvv I2C config vvv */
+// ============================================================================
+// I2C / SPI 默认配置（可在 ssd1306_conf.h 中覆盖）
+// ============================================================================
 
 #ifndef SSD1306_I2C_PORT
-#define SSD1306_I2C_PORT        hi2c1
+#define SSD1306_I2C_PORT hi2c1
 #endif
-
 #ifndef SSD1306_I2C_ADDR
-#define SSD1306_I2C_ADDR        (0x3C << 1)
+#define SSD1306_I2C_ADDR (0x3C << 1)
 #endif
-
-/* ^^^ I2C config ^^^ */
-
-/* vvv SPI config vvv */
 
 #ifndef SSD1306_SPI_PORT
-#define SSD1306_SPI_PORT        hspi2
+#define SSD1306_SPI_PORT hspi2
 #endif
-
 #ifndef SSD1306_CS_Port
-#define SSD1306_CS_Port         GPIOB
+#define SSD1306_CS_Port  GPIOB
 #endif
 #ifndef SSD1306_CS_Pin
-#define SSD1306_CS_Pin          GPIO_PIN_12
+#define SSD1306_CS_Pin   GPIO_PIN_12
 #endif
-
 #ifndef SSD1306_DC_Port
-#define SSD1306_DC_Port         GPIOB
+#define SSD1306_DC_Port  GPIOB
 #endif
 #ifndef SSD1306_DC_Pin
-#define SSD1306_DC_Pin          GPIO_PIN_14
+#define SSD1306_DC_Pin   GPIO_PIN_14
 #endif
-
 #ifndef SSD1306_Reset_Port
-#define SSD1306_Reset_Port      GPIOA
+#define SSD1306_Reset_Port GPIOA
 #endif
 #ifndef SSD1306_Reset_Pin
-#define SSD1306_Reset_Pin       GPIO_PIN_8
+#define SSD1306_Reset_Pin  GPIO_PIN_8
 #endif
-
-/* ^^^ SPI config ^^^ */
 
 #if defined(SSD1306_USE_I2C)
 extern I2C_HandleTypeDef SSD1306_I2C_PORT;
@@ -111,109 +109,197 @@ extern SPI_HandleTypeDef SSD1306_SPI_PORT;
 #error "You should define SSD1306_USE_SPI or SSD1306_USE_I2C macro!"
 #endif
 
-// SSD1306 OLED height in pixels
-#ifndef SSD1306_HEIGHT
-#define SSD1306_HEIGHT          64
-#endif
+// ============================================================================
+// 屏幕尺寸 & 帧缓冲区大小
+// ============================================================================
 
-// SSD1306 width in pixels
 #ifndef SSD1306_WIDTH
-#define SSD1306_WIDTH           128
+#define SSD1306_WIDTH 128
 #endif
-
+#ifndef SSD1306_HEIGHT
+#define SSD1306_HEIGHT 64
+#endif
 #ifndef SSD1306_BUFFER_SIZE
-#define SSD1306_BUFFER_SIZE   SSD1306_WIDTH * SSD1306_HEIGHT / 8
+#define SSD1306_BUFFER_SIZE (SSD1306_WIDTH * SSD1306_HEIGHT / 8)
 #endif
 
-// Enumeration for screen colors
-typedef enum {
-    Black = 0x00, // Black color, no pixel
-    White = 0x01  // Pixel is set. Color depends on OLED
-} SSD1306_COLOR;
+// ============================================================================
+// 基础类型定义
+// ============================================================================
 
-typedef enum {
-    SSD1306_OK = 0x00,
-    SSD1306_ERR = 0x01  // Generic error.
-} SSD1306_Error_t;
+/** @brief 像素颜色 */
+typedef enum { Black = 0x00, White = 0x01 } SSD1306_COLOR;
 
-// Struct to store transformations
+/** @brief 操作返回值 */
+typedef enum { SSD1306_OK = 0x00, SSD1306_ERR = 0x01 } SSD1306_Error_t;
+
+/** @brief 显示屏状态 */
 typedef struct {
-    uint16_t CurrentX;
-    uint16_t CurrentY;
-    uint8_t Initialized;
-    uint8_t DisplayOn;
+    uint16_t CurrentX;     // 当前光标 X
+    uint16_t CurrentY;     // 当前光标 Y
+    uint8_t Initialized;   // 初始化标志
+    uint8_t DisplayOn;     // 显示开关
 } SSD1306_t;
 
+/** @brief 二维坐标点 */
 typedef struct {
     uint8_t x;
     uint8_t y;
 } SSD1306_VERTEX;
 
-/** Font */
+/** @brief 字体描述结构体 */
 typedef struct {
-	const uint8_t width;                /**< Font width in pixels */
-	const uint8_t height;               /**< Font height in pixels */
-	const uint16_t *const data;         /**< Pointer to font data array */
-    const uint8_t *const char_width;    /**< Proportional character width in pixels (NULL for monospaced) */
+    const uint8_t width;               // 字体宽度（像素）
+    const uint8_t height;              // 字体高度（像素）
+    const uint16_t *const data;        // 字形数据指针
+    const uint8_t *const char_width;   // 比例字符宽度表（等宽字体为 NULL）
 } SSD1306_Font_t;
 
-// Procedure definitions
+// ============================================================================
+// 基础操作
+// ============================================================================
+
+/** @brief 初始化 OLED 显示屏 */
 void ssd1306_Init(void);
+
+/** @brief 全屏填充指定颜色 */
 void ssd1306_Fill(SSD1306_COLOR color);
+
+/** @brief 将帧缓冲区刷入显示屏 */
 void ssd1306_UpdateScreen(void);
+
+/** @brief 在指定坐标画一个像素 */
 void ssd1306_DrawPixel(uint8_t x, uint8_t y, SSD1306_COLOR color);
+
+// ============================================================================
+// 文字输出
+// ============================================================================
+
+/**
+ * @brief 输出单个字符
+ * @param ch    ASCII 字符 (32~126)
+ * @param Font  字体描述
+ * @param color 像素颜色
+ * @return 写入的字符，失败返回 0
+ */
 char ssd1306_WriteChar(char ch, SSD1306_Font_t Font, SSD1306_COLOR color);
-char ssd1306_WriteString(char* str, SSD1306_Font_t Font, SSD1306_COLOR color);
+
+/**
+ * @brief 输出字符串
+ * @param str   NULL 结尾的字符串
+ * @param Font  字体描述
+ * @param color 像素颜色
+ * @return 写入失败的字符（成功返回 '\0'）
+ */
+char ssd1306_WriteString(char *str, SSD1306_Font_t Font, SSD1306_COLOR color);
+
+/** @brief 设置光标位置 */
 void ssd1306_SetCursor(uint8_t x, uint8_t y);
-void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR color);
-void ssd1306_DrawArc(uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle, uint16_t sweep, SSD1306_COLOR color);
-void ssd1306_DrawArcWithRadiusLine(uint8_t x, uint8_t y, uint8_t radius, uint16_t start_angle, uint16_t sweep, SSD1306_COLOR color);
-void ssd1306_DrawCircle(uint8_t par_x, uint8_t par_y, uint8_t par_r, SSD1306_COLOR color);
-void ssd1306_FillCircle(uint8_t par_x,uint8_t par_y,uint8_t par_r,SSD1306_COLOR par_color);
-void ssd1306_Polyline(const SSD1306_VERTEX *par_vertex, uint16_t par_size, SSD1306_COLOR color);
-void ssd1306_DrawRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR color);
-void ssd1306_FillRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, SSD1306_COLOR color);
+
+// ============================================================================
+// 几何图形绘制
+// ============================================================================
+
+/** @brief 画直线（Bresenham 算法） */
+void ssd1306_Line(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2,
+                  SSD1306_COLOR color);
 
 /**
- * @brief Invert color of pixels in rectangle (include border)
- * 
- * @param x1 X Coordinate of top left corner
- * @param y1 Y Coordinate of top left corner
- * @param x2 X Coordinate of bottom right corner
- * @param y2 Y Coordinate of bottom right corner
- * @return SSD1306_Error_t status
+ * @brief 画圆弧
+ * @param x, y       圆心坐标
+ * @param radius     半径
+ * @param start_angle 起始角度（度）
+ * @param sweep      扫描角度（度）
  */
-SSD1306_Error_t ssd1306_InvertRectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
-
-void ssd1306_DrawBitmap(uint8_t x, uint8_t y, const unsigned char* bitmap, uint8_t w, uint8_t h, SSD1306_COLOR color);
+void ssd1306_DrawArc(uint8_t x, uint8_t y, uint8_t radius,
+                     uint16_t start_angle, uint16_t sweep,
+                     SSD1306_COLOR color);
 
 /**
- * @brief Sets the contrast of the display.
- * @param[in] value contrast to set.
- * @note Contrast increases as the value increases.
- * @note RESET = 7Fh.
+ * @brief 画圆弧并包含起始／终止角度到圆心的半径线
  */
+void ssd1306_DrawArcWithRadiusLine(uint8_t x, uint8_t y, uint8_t radius,
+                                   uint16_t start_angle, uint16_t sweep,
+                                   SSD1306_COLOR color);
+
+/** @brief 画空心圆（Bresenham 算法） */
+void ssd1306_DrawCircle(uint8_t x, uint8_t y, uint8_t r,
+                        SSD1306_COLOR color);
+
+/** @brief 画实心圆（Bresenham 算法） */
+void ssd1306_FillCircle(uint8_t x, uint8_t y, uint8_t r,
+                        SSD1306_COLOR color);
+
+/** @brief 画折线 */
+void ssd1306_Polyline(const SSD1306_VERTEX *vertex, uint16_t size,
+                      SSD1306_COLOR color);
+
+/** @brief 画矩形边框 */
+void ssd1306_DrawRectangle(uint8_t x1, uint8_t y1,
+                           uint8_t x2, uint8_t y2,
+                           SSD1306_COLOR color);
+
+/** @brief 画实心矩形 */
+void ssd1306_FillRectangle(uint8_t x1, uint8_t y1,
+                           uint8_t x2, uint8_t y2,
+                           SSD1306_COLOR color);
+
+/**
+ * @brief 矩形区域反色（含边框）
+ * @return SSD1306_OK 或 SSD1306_ERR（坐标越界时）
+ */
+SSD1306_Error_t ssd1306_InvertRectangle(uint8_t x1, uint8_t y1,
+                                        uint8_t x2, uint8_t y2);
+
+// ============================================================================
+// 位图绘制
+// ============================================================================
+
+/**
+ * @brief 画位图
+ * @param x, y    左上角坐标
+ * @param bitmap  位图数据（每行按整字节对齐）
+ * @param w, h    位图宽高（像素）
+ */
+void ssd1306_DrawBitmap(uint8_t x, uint8_t y, const unsigned char *bitmap,
+                        uint8_t w, uint8_t h, SSD1306_COLOR color);
+
+// ============================================================================
+// 显示控制
+// ============================================================================
+
+/** @brief 设置对比度（0~255，RESET = 0x7F） */
 void ssd1306_SetContrast(const uint8_t value);
 
-/**
- * @brief Set Display ON/OFF.
- * @param[in] on 0 for OFF, any for ON.
- */
+/** @brief 控制显示开关（0 = 关，非 0 = 开） */
 void ssd1306_SetDisplayOn(const uint8_t on);
 
-/**
- * @brief Reads DisplayOn state.
- * @return  0: OFF.
- *          1: ON.
- */
+/** @brief 查询显示状态（0 = 关，1 = 开） */
 uint8_t ssd1306_GetDisplayOn(void);
 
-// Low-level procedures
+// ============================================================================
+// 底层硬件接口
+// ============================================================================
+
+/** @brief 硬件复位 */
 void ssd1306_Reset(void);
+
+/** @brief 发送命令字节 */
 void ssd1306_WriteCommand(uint8_t byte);
-void ssd1306_WriteData(uint8_t* buffer, size_t buff_size);
-SSD1306_Error_t ssd1306_FillBuffer(uint8_t* buf, uint32_t len);
 
-//_END_STD_C
+/** @brief 发送数据 */
+void ssd1306_WriteData(uint8_t *buffer, size_t buff_size);
 
-#endif // __SSD1306_H__
+/**
+ * @brief 用外部数据覆盖帧缓冲区
+ * @param buf 数据源
+ * @param len 数据长度
+ * @return SSD1306_OK / SSD1306_ERR
+ */
+SSD1306_Error_t ssd1306_FillBuffer(uint8_t *buf, uint32_t len);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // SSD1306_H

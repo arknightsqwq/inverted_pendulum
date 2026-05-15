@@ -42,6 +42,9 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Src/interrupt.cpp
         User/Src/motor.cpp
         User/Src/pid.cpp
+        User/Src/ssd1306.c
+        User/Src/ssd1306_fonts.c
+        User/Src/ssd1306_tests.c
 )
 
 
