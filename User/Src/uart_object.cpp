@@ -13,7 +13,7 @@ void UART_Object::send(float value) {
 
 void UART_Object::send(double value) {
     // double 类型自动转为 float 处理[cite: 3]
-    Send((float)value);
+    send((float)value);
 }
 
 void UART_Object::send(int value) {
