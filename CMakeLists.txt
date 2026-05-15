@@ -35,20 +35,13 @@ enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
-        User/Inc/DegreeSensor.hpp
-        User/Src/DegreeSensor.cpp
-        User/Src/Delay_us.c
-        User/Inc/Delay_us.h
-        User/Inc/Button.hpp
-        User/Inc/Motor.hpp
-        User/Src/Motor.cpp
-        User/Inc/UART_Object.hpp
-        User/Src/UART_Object.cpp
-        User/Src/Interrupt.cpp
-        User/Inc/PID.hpp
-        User/Src/PID.cpp
-        User/Inc/global.hpp
+        User/Src/degree_sensor.cpp
+        User/Src/uart_object.cpp
+        User/Src/delay_us.c
         User/Src/global.cpp
+        User/Src/interrupt.cpp
+        User/Src/motor.cpp
+        User/Src/pid.cpp
 )
 
 

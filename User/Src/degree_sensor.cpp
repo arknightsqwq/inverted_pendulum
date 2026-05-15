@@ -1,4 +1,4 @@
-#include "DegreeSensor.hpp"
+#include "degree_sensor.hpp"
 
 // 使用初始化列表赋值，比在函数体内存取更高效
 DegreeSensor::DegreeSensor(ADC_HandleTypeDef* hadc, float alpha)
@@ -16,7 +16,7 @@ void DegreeSensor::start() {
     HAL_ADC_Start_DMA(_hadc, reinterpret_cast<uint32_t*>(&_adc_buf), 1);
 }
 
-int DegreeSensor::getdegree() {
+int DegreeSensor::get_degree() {
     // 读取 DMA 自动更新的缓存
     int raw = static_cast<int>(_adc_buf);
 

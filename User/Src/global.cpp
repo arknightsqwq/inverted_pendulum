@@ -2,18 +2,18 @@
 #include "tim.h"
 #include "usart.h"
 
-#include "DegreeSensor.hpp"
-#include "Motor.hpp"
-#include "Button.hpp"
-#include "UART_Object.hpp"
-#include "PID.hpp"
+#include "degree_sensor.hpp"
+#include "motor.hpp"
+#include "button.hpp"
+#include "uart_object.hpp"
+#include "pid.hpp"
 #include "global.hpp"
 
 // 按钮特化声明 — 非公共接口，放在实现文件中
-template <> void Button<1>::processEvent();
-template <> void Button<2>::processEvent();
-template <> void Button<3>::processEvent();
-template <> void Button<4>::processEvent();
+template <> void Button<1>::process_event();
+template <> void Button<2>::process_event();
+template <> void Button<3>::process_event();
+template <> void Button<4>::process_event();
 
 //角度传感器
 DegreeSensor sensor(&hadc1);
@@ -41,7 +41,7 @@ PID positionPID(positionloop);
 // --- 各按钮事件处理特化 ---
 
 template <>
-void Button<1>::processEvent() {
+void Button<1>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS: break;
     case LONG_PRESS:  break;
@@ -51,7 +51,7 @@ void Button<1>::processEvent() {
 }
 
 template <>
-void Button<2>::processEvent() {
+void Button<2>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS: break;
     case LONG_PRESS:  break;
@@ -61,7 +61,7 @@ void Button<2>::processEvent() {
 }
 
 template <>
-void Button<3>::processEvent() {
+void Button<3>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS: break;
     case LONG_PRESS:  break;
@@ -71,7 +71,7 @@ void Button<3>::processEvent() {
 }
 
 template <>
-void Button<4>::processEvent() {
+void Button<4>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS: break;
     case LONG_PRESS:  break;

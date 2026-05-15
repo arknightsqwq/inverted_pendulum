@@ -24,7 +24,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
            根据编码器位置偏差，产生角度偏置 */
         if (++pos_cnt >= POSITION_DOWNSAMPLE) {
             pos_cnt = 0;
-            float offset = positionPID.Calculate(
+            float offset = positionPID.calculate(
                 static_cast<float>(positionPID._cfg.target),
                 static_cast<float>(motor.get_location()));
             angle_target = static_cast<float>(anglePID._cfg.target) + offset;
@@ -32,9 +32,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
         /* 内环：角度 PID，每次中断执行 (1kHz)
            直接输出 PWM 占空比 */
-        auto pwm = anglePID.Calculate(
+        auto pwm = anglePID.calculate(
             angle_target,
-            static_cast<float>(sensor.getdegree()));
+            static_cast<float>(sensor.get_degree()));
         motor.set_pwm(static_cast<int8_t>(pwm));
     }
 }

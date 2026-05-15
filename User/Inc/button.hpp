@@ -3,7 +3,7 @@
 
 #include "stm32f1xx_hal.h"
 
-// ButtonID 用于编译期区分不同按键，processEvent 通过它分发到对应的业务逻辑
+// ButtonID 用于编译期区分不同按键，process_event 通过它分发到对应的业务逻辑
 template <int ButtonID>
 class Button {
 public:
@@ -76,8 +76,8 @@ public:
         _holding_interval_ms = holding_interval;
     }
 
-    // processEvent 在 global.cpp 中通过特化注入具体业务逻辑
-    void processEvent();
+    // process_event 在 global.cpp 中通过特化注入具体业务逻辑
+    void process_event();
 
 private:
     enum State { IDLE, DEBOUNCE, PRESSED, HOLDING_STATE };
@@ -97,18 +97,18 @@ private:
 };
 
 template <int ButtonID>
-void Button<ButtonID>::processEvent() {
+void Button<ButtonID>::process_event() {
     // 默认空操作，在 global.cpp 中通过特化注入具体业务逻辑
 }
 
 template <typename... Buttons>
-void updateAllButton(Buttons&... btns) {
+void update_all_buttons(Buttons&... btns) {
     (btns.update(), ...);
 }
 
 template <typename... Buttons>
-void processAllButtons(Buttons&... btns) {
-    (btns.processEvent(), ...);
+void process_all_buttons(Buttons&... btns) {
+    (btns.process_event(), ...);
 }
 
 #endif

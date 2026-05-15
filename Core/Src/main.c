@@ -110,8 +110,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    updateAllButton(button1, button2, button3, button4);
-    processAllButtons(button1, button2, button3, button4);
+    update_all_buttons(button1, button2, button3, button4);
+    process_all_buttons(button1, button2, button3, button4);
     pclink.send("hello");
     /* USER CODE END WHILE */
 

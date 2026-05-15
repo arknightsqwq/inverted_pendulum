@@ -31,17 +31,17 @@ public:
      * @param measured 实际测量值
      * @return 控制输出量
      */
-    float Calculate(float target, float measured);
+    float calculate(float target, float measured);
 
     /**
      * @brief 重置积分项和历史误差（在电机重启或切换模式时使用）
      */
-    void Reset();
+    void reset();
 
     /**
      * @brief 运行时动态更新 PID 参数（用于上位机调参）
      */
-    void UpdateConfig(const PIDConfig& new_config);
+    void update_config(const PIDConfig& new_config);
 
 
 

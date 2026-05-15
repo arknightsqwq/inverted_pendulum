@@ -1,10 +1,10 @@
-#include "PID.hpp"
+#include "pid.hpp"
 
 PID::PID(const PIDConfig& config)
     : _cfg(config), _integral(0.0f), _last_error(0.0f) {
 }
 
-float PID::Calculate(float target, float measured) {
+float PID::calculate(float target, float measured) {
     // 1. 计算当前误差
     float error = target - measured;
 
@@ -33,11 +33,11 @@ float PID::Calculate(float target, float measured) {
     return output;
 }
 
-void PID::Reset() {
+void PID::reset() {
     _integral = 0.0f;
     _last_error = 0.0f;
 }
 
-void PID::UpdateConfig(const PIDConfig& new_config) {
+void PID::update_config(const PIDConfig& new_config) {
     _cfg = new_config;
 }

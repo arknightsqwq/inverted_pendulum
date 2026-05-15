@@ -1,11 +1,11 @@
 #ifndef GLOBAL_HPP
 #define GLOBAL_HPP
 
-#include "DegreeSensor.hpp"
-#include "Motor.hpp"
-#include "Button.hpp"
-#include "UART_Object.hpp"
-#include "PID.hpp"
+#include "degree_sensor.hpp"
+#include "motor.hpp"
+#include "button.hpp"
+#include "uart_object.hpp"
+#include "pid.hpp"
 
 extern DegreeSensor sensor;
 extern Motor motor;
