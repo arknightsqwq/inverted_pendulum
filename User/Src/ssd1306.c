@@ -64,12 +64,12 @@ void ssd1306_Reset(void) {
 
 void ssd1306_WriteCommand(uint8_t byte) {
     HAL_I2C_Mem_Write(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR,
-                      0x00, 1, &byte, 1, HAL_MAX_DELAY);
+                      0x00, 1, &byte, 1, 100);
 }
 
 void ssd1306_WriteData(uint8_t *buffer, size_t buff_size) {
     HAL_I2C_Mem_Write(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR,
-                      0x40, 1, buffer, buff_size, HAL_MAX_DELAY);
+                      0x40, 1, buffer, buff_size, 100);
 }
 
 #elif defined(SSD1306_USE_SPI)
@@ -320,7 +320,7 @@ char ssd1306_WriteChar(char ch, SSD1306_Font_t Font, SSD1306_COLOR color) {
     return ch;
 }
 
-char ssd1306_WriteString(char *str, SSD1306_Font_t Font,
+char ssd1306_WriteString(const char *str, SSD1306_Font_t Font,
                          SSD1306_COLOR color) {
     while (*str) {
         if (ssd1306_WriteChar(*str, Font, color) != *str) {

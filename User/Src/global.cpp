@@ -34,9 +34,11 @@ Button<4> button4(GPIOB,GPIO_PIN_14,GPIO_PIN_SET);
 
 //PID
 PIDConfig angleloop{0,0,0,0,0,0,0};
-PIDConfig positionloop{0,0,0,0,0,0,0};
+PIDConfig positionloop{3.0f, 0, 0, -100.0f, 100.0f, 0, 400};
 PID anglePID(angleloop);
 PID positionPID(positionloop);
+
+volatile uint32_t pid_isr_count = 0;
 
 // --- 各按钮事件处理特化 ---
 

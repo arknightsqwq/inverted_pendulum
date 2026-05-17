@@ -17,12 +17,12 @@ extern "C" {
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM3) {
-        static float angle_target = static_cast<float>(anglePID._cfg.target);
-        static uint8_t pos_cnt = 0;
+        pid_isr_count++;
 
-        /* 外环：位置 PID，降采样 (200Hz)
-           根据编码器位置偏差，产生角度偏置 */
-        if (++pos_cnt >= POSITION_DOWNSAMPLE) {
+        static uint8_t pos_cnt = 0;
+        /*static float angle_target = static_cast<float>(anglePID._cfg.target);
+
+        if (++pos_cnt >= POSITION_DOWNSAMPLE) { //外环 200Hz
             pos_cnt = 0;
             float offset = positionPID.calculate(
                 static_cast<float>(positionPID._cfg.target),
@@ -30,12 +30,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
             angle_target = static_cast<float>(anglePID._cfg.target) + offset;
         }
 
-        /* 内环：角度 PID，每次中断执行 (1kHz)
-           直接输出 PWM 占空比 */
+        //内环 1kHz
         auto pwm = anglePID.calculate(
             angle_target,
             static_cast<float>(sensor.get_degree()));
-        motor.set_pwm(static_cast<int8_t>(pwm));
+        motor.set_pwm(static_cast<int8_t>(pwm));*/
+
+        // === 单环位置 PID（测试用）===
+        /*auto pwm = positionPID.calculate(
+            static_cast<float>(positionPID._cfg.target),
+            static_cast<float>(motor.get_location()));
+        motor.set_pwm(static_cast<int8_t>(pwm));*/
     }
 }
 

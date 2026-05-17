@@ -191,7 +191,7 @@ char ssd1306_WriteChar(char ch, SSD1306_Font_t Font, SSD1306_COLOR color);
  * @param color 像素颜色
  * @return 写入失败的字符（成功返回 '\0'）
  */
-char ssd1306_WriteString(char *str, SSD1306_Font_t Font, SSD1306_COLOR color);
+char ssd1306_WriteString(const char *str, SSD1306_Font_t Font, SSD1306_COLOR color);
 
 /** @brief 设置光标位置 */
 void ssd1306_SetCursor(uint8_t x, uint8_t y);

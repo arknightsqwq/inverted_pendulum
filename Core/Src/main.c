@@ -29,6 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include "global.hpp"
 #include "ssd1306.h"
+#include "ssd1306_fonts.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +56,7 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+//static uint8_t pos_cnt = 0;  已移至 interrupt.cpp
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,21 +103,35 @@ int main(void)
   /* USER CODE BEGIN 2 */
   sensor.start();
   motor.start();
-  /* TIM2=编码器, TIM1=PWM, TIM3=控制节拍（PeriodElapsed -> PID） */
+  pclink.send("before ssd1306\n");
   HAL_TIM_Base_Start_IT(&htim3);
+  pclink.send("init done\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    update_all_buttons(button1, button2, button3, button4);
-    process_all_buttons(button1, button2, button3, button4);
-    pclink.send("hello");
-    
+    //update_all_buttons(button1, button2, button3, button4);
+    //process_all_buttons(button1, button2, button3, button4);
+    /* 每秒打印 ISR 实际频率 */{
+        static uint32_t last_tick = 0;
+        uint32_t now = HAL_GetTick();
+        if (now - last_tick >= 1000) {
+
+          pclink.send(sensor.get_degree());
+          pclink.send(motor.get_location());
+          pclink.send("freq: ");
+          pclink.send(static_cast<int>(pid_isr_count));
+          pclink.send(" Hz\n");
+          pid_isr_count = 0;
+          last_tick = now;
+        }
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }

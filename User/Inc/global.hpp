@@ -20,4 +20,6 @@ extern PIDConfig positionloop;
 extern PID anglePID;
 extern PID positionPID;
 
+extern volatile uint32_t pid_isr_count;
+
 #endif // GLOBAL_HPP

@@ -8,9 +8,9 @@ public:
     /**
      * @brief 构造函数
      * @param hadc ADC 句柄
-     * @param alpha 一阶低通滤波系数 (默认 0.3f)
+     * @param alpha_q12 一阶低通滤波系数 (Q12 定点, 默认 1229 ≈ 0.3)
      */
-    explicit DegreeSensor(ADC_HandleTypeDef* hadc, float alpha = 0.3f);
+    explicit DegreeSensor(ADC_HandleTypeDef* hadc, uint16_t alpha_q12 = 1229);
 
     /**
      * @brief 启动传感器（校准并开启 DMA）
@@ -26,8 +26,8 @@ public:
 private:
     ADC_HandleTypeDef* _hadc; // ADC 硬件句柄
     uint16_t _adc_buf;        // DMA 原始缓冲区
-    float _alpha;             // 滤波系数[cite: 3]
-    int _last_val;            // 上一次的滤波结果[cite: 3]
+    uint16_t _alpha_q12;      // 滤波系数 (Q12 定点)
+    int _last_val;            // 上一次的滤波结果
 };
 
 #endif // DEGREE_SENSOR_HPP
