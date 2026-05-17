@@ -104,7 +104,9 @@ int main(void)
   sensor.start();
   motor.start();
   pclink.send("before ssd1306\n");
+  pclink.send("starting tim3...\n");
   HAL_TIM_Base_Start_IT(&htim3);
+  pclink.send("tim3 started\n");
   pclink.send("init done\n");
   /* USER CODE END 2 */
 
@@ -112,8 +114,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    //update_all_buttons(button1, button2, button3, button4);
-    //process_all_buttons(button1, button2, button3, button4);
+    update_all_buttons(button1, button2, button3, button4);
+    process_all_buttons(button1, button2, button3, button4);
     /* 每秒打印 ISR 实际频率 */{
         static uint32_t last_tick = 0;
         uint32_t now = HAL_GetTick();

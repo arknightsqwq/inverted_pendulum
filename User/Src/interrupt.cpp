@@ -36,11 +36,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
             static_cast<float>(sensor.get_degree()));
         motor.set_pwm(static_cast<int8_t>(pwm));*/
 
-        // === 单环位置 PID（测试用）===
-        /*auto pwm = positionPID.calculate(
+        //=== 单环位置 PID（测试用）===
+        auto pwm = positionPID.calculate(
             static_cast<float>(positionPID._cfg.target),
             static_cast<float>(motor.get_location()));
-        motor.set_pwm(static_cast<int8_t>(pwm));*/
+        motor.set_pwm(static_cast<int8_t>(pwm));
     }
 }
 

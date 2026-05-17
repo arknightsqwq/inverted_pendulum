@@ -1,53 +1,53 @@
 #ifndef PID_HPP
 #define PID_HPP
 
+#include <cstdint>
+
 /**
- * @brief PID 配置参数结构体
+ * @brief PID 配置参数结构体（浮点输入，由 PID 类自动转为 Q12 定点数）
  */
 struct PIDConfig {
     float kp;
     float ki;
     float kd;
-    float out_min;  // 输出下限（如 -100.0f）
-    float out_max;  // 输出上限（如 100.0f）
-    float i_limit;  // 积分限幅，防止积分饱和
+    float out_min;
+    float out_max;
+    float i_limit;
     int target;
 };
 
 class PID {
 public:
-    /** 运行时可改（上位机/调试），与 Calculate 使用的参数一致 */
     PIDConfig _cfg;
 
-    /**
-     * @brief 构造函数
-     * @param config PID 初始配置参数
-     */
     explicit PID(const PIDConfig& config);
 
     /**
-     * @brief 执行 PID 计算
+     * @brief 执行 PID 计算（内部使用 Q12 定点数运算）
      * @param target 设定目标值
      * @param measured 实际测量值
      * @return 控制输出量
      */
     float calculate(float target, float measured);
 
-    /**
-     * @brief 重置积分项和历史误差（在电机重启或切换模式时使用）
-     */
     void reset();
-
-    /**
-     * @brief 运行时动态更新 PID 参数（用于上位机调参）
-     */
     void update_config(const PIDConfig& new_config);
 
-
-
 private:
-    float _integral;
-    float _last_error;
+    static constexpr int Q12 = 12;
+    static constexpr int Q12_SCALE = 1 << Q12;   // 4096
+
+    // Q12 定点数配置
+    int32_t _q_kp, _q_ki, _q_kd;
+    int32_t _q_out_min, _q_out_max, _q_i_limit;
+
+    int32_t _integral;    // Q12
+    int32_t _last_error;  // Q12
+
+    static int32_t to_q12(float v)   { return static_cast<int32_t>(v * Q12_SCALE); }
+    static float   from_q12(int32_t v) { return static_cast<float>(v) / Q12_SCALE; }
+
+    void _sync_config();
 };
 
 #endif // PID_HPP

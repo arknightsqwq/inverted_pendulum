@@ -563,7 +563,7 @@ void ssd1306_DrawBitmap(uint8_t x, uint8_t y, const unsigned char *bitmap,
 
     for (uint8_t j = 0; j < h; j++, y++) {
         for (uint8_t i = 0; i < w; i++) {
-            uint8_t byte;
+            uint8_t byte = 0;
             if (i & 7) {
                 byte <<= 1;
             } else {
