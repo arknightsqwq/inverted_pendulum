@@ -120,14 +120,27 @@ int main(void)
         static uint32_t last_tick = 0;
         uint32_t now = HAL_GetTick();
         if (now - last_tick >= 1000) {
-
           pclink.send(sensor.get_degree());
           pclink.send(motor.get_location());
+          pclink.send("target: ");
+          pclink.send(positionPID._cfg.target);
           pclink.send("freq: ");
           pclink.send(static_cast<int>(pid_isr_count));
           pclink.send(" Hz\n");
           pid_isr_count = 0;
           last_tick = now;
+        }
+    }
+    /* 每 3 秒自增目标位置 */{
+        static uint32_t last_inc_tick = 0;
+        if (HAL_GetTick() - last_inc_tick >= 3000) {
+            last_inc_tick = HAL_GetTick();
+            positionPID._cfg.target += 200;
+            if (positionPID._cfg.target > 800)
+                positionPID._cfg.target = 0;
+            pclink.send("target-> ");
+            pclink.send(positionPID._cfg.target);
+            pclink.send("\n");
         }
     }
     /* USER CODE END WHILE */
