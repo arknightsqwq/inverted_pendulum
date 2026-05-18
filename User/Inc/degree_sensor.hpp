@@ -8,9 +8,9 @@ public:
     /**
      * @brief 构造函数
      * @param hadc ADC 句柄
-     * @param alpha_q12 一阶低通滤波系数 (Q12 定点, 默认 1229 ≈ 0.3)
+     * @param alpha 一阶低通滤波系数 (0.0 ~ 1.0, 默认 0.3)
      */
-    explicit DegreeSensor(ADC_HandleTypeDef* hadc, uint16_t alpha_q12 = 1229);
+    explicit DegreeSensor(ADC_HandleTypeDef* hadc, float alpha = 0.3f, int adc_bias = 0);
 
     /**
      * @brief 启动传感器（校准并开启 DMA）
@@ -19,15 +19,22 @@ public:
 
     /**
      * @brief 获取滤波后的角度值
-     * @return 经过一阶滤波后的 ADC 读数
+     * @return 角度 (0~360°)，映射自 ADC 0~4095
      */
-    int get_degree();
+    float get_degree();
+
+    /**
+     * @brief 获取原生角度值
+     * @return ADC 0~4095
+     */
+    int get_nativedegree();
 
 private:
     ADC_HandleTypeDef* _hadc; // ADC 硬件句柄
     uint16_t _adc_buf;        // DMA 原始缓冲区
     uint16_t _alpha_q12;      // 滤波系数 (Q12 定点)
     int _last_val;            // 上一次的滤波结果
+    int _adc_bias;            // ADC 偏置，使 (原生值 + bias) % 4096 → 0°
 };
 
 #endif // DEGREE_SENSOR_HPP

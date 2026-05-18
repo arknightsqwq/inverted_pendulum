@@ -116,31 +116,19 @@ int main(void)
   {
     update_all_buttons(button1, button2, button3, button4);
     process_all_buttons(button1, button2, button3, button4);
-    /* 每秒打印 ISR 实际频率 */{
+    /* 每秒自增目标位置并打印 ISR 频率 */{
         static uint32_t last_tick = 0;
         uint32_t now = HAL_GetTick();
-        if (now - last_tick >= 1000) {
-          pclink.send(sensor.get_degree());
-          pclink.send(motor.get_location());
-          pclink.send("target: ");
-          pclink.send(positionPID._cfg.target);
-          pclink.send("freq: ");
-          pclink.send(static_cast<int>(pid_isr_count));
-          pclink.send(" Hz\n");
-          pid_isr_count = 0;
-          last_tick = now;
-        }
-    }
-    /* 每 3 秒自增目标位置 */{
-        static uint32_t last_inc_tick = 0;
-        if (HAL_GetTick() - last_inc_tick >= 3000) {
-            last_inc_tick = HAL_GetTick();
-            positionPID._cfg.target += 200;
-            if (positionPID._cfg.target > 800)
-                positionPID._cfg.target = 0;
-            pclink.send("target-> ");
-            pclink.send(positionPID._cfg.target);
-            pclink.send("\n");
+        if (now - last_tick >= 10) {
+            last_tick = now;
+
+            char buf[64];
+            snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
+                     anglePID.target,
+                     sensor.get_degree(),
+                     static_cast<int>(pid_isr_count));
+            pclink.send(buf);
+            pid_isr_count = 0;
         }
     }
     /* USER CODE END WHILE */

@@ -16,13 +16,20 @@ public:
           TIM_HandleTypeDef* htim_Driver,
           uint32_t Channel,
           GPIO_TypeDef* DIR_Port_A, uint16_t DIR_Pin_A,
-          GPIO_TypeDef* DIR_Port_B, uint16_t DIR_Pin_B);
+          GPIO_TypeDef* DIR_Port_B, uint16_t DIR_Pin_B,
+          int16_t counts_per_rev = 0);
 
-    // 获取编码器位置
+    // 获取编码器位置（原始计数值）
     int16_t get_location() const;
 
-    // 获取速度函数
+    // 获取速度（原始计数值变化量，需根据调用间隔换算）
     int16_t get_speed();
+
+    // 获取角度（度），映射自编码器计数值
+    float get_angle() const;
+
+    // 获取角速度（度/秒），映射自编码器变化量
+    float get_angular_velocity();
 
     // 设置 PWM 占空比 (-100 到 100)
     void set_pwm(int8_t duty_cycle);
@@ -41,6 +48,7 @@ private:
     GPIO_TypeDef* _dir_port_b;
     uint16_t _dir_pin_b;
 
+    int16_t _counts_per_rev;         // 电机转一圈的编码器计数值
     mutable int16_t _last_count = 0; // 记录上一次的计数值
 };
 

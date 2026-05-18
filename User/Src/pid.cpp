@@ -1,20 +1,29 @@
 #include "pid.hpp"
 
-PID::PID(const PIDConfig& config)
-    : _cfg(config), _integral(0), _last_error(0) {
+PID::PID(float kp, float ki, float kd,
+         float out_min, float out_max, float i_limit,
+         float target)
+    : kp(kp), ki(ki), kd(kd),
+      out_min(out_min), out_max(out_max), i_limit(i_limit),
+      target(target),
+      _integral(0), _last_error(0) {
     _sync_config();
 }
 
 void PID::_sync_config() {
-    _q_kp      = to_q12(_cfg.kp);
-    _q_ki      = to_q12(_cfg.ki);
-    _q_kd      = to_q12(_cfg.kd);
-    _q_out_min = to_q12(_cfg.out_min);
-    _q_out_max = to_q12(_cfg.out_max);
-    _q_i_limit = to_q12(_cfg.i_limit);
+    _q_kp      = to_q12(kp);
+    _q_ki      = to_q12(ki);
+    _q_kd      = to_q12(kd);
+    _q_out_min = to_q12(out_min);
+    _q_out_max = to_q12(out_max);
+    _q_i_limit = to_q12(i_limit);
 }
 
-float PID::calculate(float target, float measured) {
+void PID::sync() {
+    _sync_config();
+}
+
+float PID::calculate(float measured) {
     int32_t error = to_q12(target - measured);
 
     _integral += error;
@@ -23,7 +32,6 @@ float PID::calculate(float target, float measured) {
 
     int32_t derivative = error - _last_error;
 
-    // Q12 × Q12 → Q24，右移 12 位回到 Q12；用 int64_t 防溢出
     int32_t output = static_cast<int32_t>(
         ((int64_t)_q_kp * error      >> Q12) +
         ((int64_t)_q_ki * _integral  >> Q12) +
@@ -40,9 +48,4 @@ float PID::calculate(float target, float measured) {
 void PID::reset() {
     _integral   = 0;
     _last_error = 0;
-}
-
-void PID::update_config(const PIDConfig& new_config) {
-    _cfg = new_config;
-    _sync_config();
 }

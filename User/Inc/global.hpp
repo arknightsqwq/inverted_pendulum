@@ -7,6 +7,12 @@
 #include "uart_object.hpp"
 #include "pid.hpp"
 
+// 按钮 process_event 特化声明 — 必须在调用前可见，否则编译器会实例化空模板
+template <> void Button<1>::process_event();
+template <> void Button<2>::process_event();
+template <> void Button<3>::process_event();
+template <> void Button<4>::process_event();
+
 extern DegreeSensor sensor;
 extern Motor motor;
 extern Button<1> button1;
@@ -15,8 +21,6 @@ extern Button<3> button3;
 extern Button<4> button4;
 extern UART_Object pclink;
 
-extern PIDConfig angleloop;
-extern PIDConfig positionloop;
 extern PID anglePID;
 extern PID positionPID;
 
