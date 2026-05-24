@@ -47,8 +47,8 @@
 // 可选的屏幕调整
 // ============================================================================
 
-// #define SSD1306_MIRROR_VERT
-// #define SSD1306_MIRROR_HORIZ
+#define SSD1306_MIRROR_VERT
+#define SSD1306_MIRROR_HORIZ
 // #define SSD1306_INVERSE_COLOR
 // #define SSD1306_X_OFFSET
 // #define SSD1306_WIDTH  64

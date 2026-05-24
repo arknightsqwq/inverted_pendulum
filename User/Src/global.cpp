@@ -33,8 +33,8 @@ Button<3> button3(GPIOB,GPIO_PIN_13,GPIO_PIN_RESET);
 Button<4> button4(GPIOB,GPIO_PIN_14,GPIO_PIN_RESET);
 
 //PID
-PID anglePID(4.0f, 0, 10.0f, -100.0f, 100.0f, 0, 172);
-PID positionPID(5.0f, 0.0f, 5.0f, -30.0f, 30.0f, 0, 20);
+PID anglePID(4.0f, 0.05f, 2.0f, -100.0f, 100.0f, 200, 170.6);
+PID positionPID(5.0f, 0.0f, 5.0f, -30.0f, 30.0f, 30, 20);
 
 volatile uint32_t pid_isr_count = 0;
 
@@ -43,14 +43,15 @@ volatile uint32_t pid_isr_count = 0;
 template <>
 void Button<1>::process_event() {
     switch (get_event()) {
-    case SHORT_PRESS: {
-            float t = positionPID.target + 20;
-            if (t > 90) t = 0;
-            positionPID.target = t;
+    case SHORT_PRESS:
+        anglePID.kp += 0.1f;
+        anglePID.sync();
         break;
-    }
     case LONG_PRESS:  break;
-    case HOLDING:     break;
+    case HOLDING:
+        anglePID.kp -= 0.1f;
+        anglePID.sync();
+        break;
     default:          break;
     }
 }
@@ -59,9 +60,15 @@ void Button<1>::process_event() {
 template <>
 void Button<2>::process_event() {
     switch (get_event()) {
-    case SHORT_PRESS: break;
+    case SHORT_PRESS:
+        anglePID.ki += 0.05f;
+        anglePID.sync();
+        break;
     case LONG_PRESS:  break;
-    case HOLDING:     break;
+    case HOLDING:
+        anglePID.ki -= 0.05;
+        anglePID.sync();
+        break;
     default:          break;
     }
 }
@@ -69,9 +76,15 @@ void Button<2>::process_event() {
 template <>
 void Button<3>::process_event() {
     switch (get_event()) {
-    case SHORT_PRESS: break;
+    case SHORT_PRESS:
+        anglePID.kd += 0.1f;
+        anglePID.sync();
+        break;
     case LONG_PRESS:  break;
-    case HOLDING:     break;
+    case HOLDING:
+        anglePID.kd -= 0.1f;
+        anglePID.sync();
+        break;
     default:          break;
     }
 }

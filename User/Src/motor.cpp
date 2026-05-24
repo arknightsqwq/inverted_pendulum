@@ -51,11 +51,12 @@ float Motor::get_angular_velocity() {
     return static_cast<float>(get_speed()) * 1000.0f / _counts_per_rev * 360.0f;
 }
 
-void Motor::set_pwm(int8_t duty_cycle) {
+void Motor::set_pwm(float duty_cycle) {
     uint32_t arr = __HAL_TIM_GET_AUTORELOAD(_htim_driver);
-    uint32_t compare_value = std::abs(static_cast<int>(duty_cycle)) * arr / 100;
+    float abs_duty = duty_cycle > 0 ? duty_cycle : -duty_cycle;
+    uint32_t compare_value = static_cast<uint32_t>(abs_duty / 100.0f * arr);
 
-    if (duty_cycle > 0) {
+    if (duty_cycle > 0.0f) {
         HAL_GPIO_WritePin(_dir_port_a, _dir_pin_a, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(_dir_port_b, _dir_pin_b, GPIO_PIN_SET);
     } else {

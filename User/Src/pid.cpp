@@ -45,6 +45,10 @@ float PID::calculate(float measured) {
     return from_q12(output);
 }
 
+float PID::get_integral() const {
+    return from_q12(_integral);
+}
+
 void PID::reset() {
     _integral   = 0;
     _last_error = 0;

@@ -14,6 +14,7 @@ public:
         float target = 0);
 
     float calculate(float measured);
+    float get_integral() const;  // 返回积分累加值（用于观察积分限幅）
     void reset();
     void sync();  // 更改 kp/ki/kd 后调用，同步 Q12 定点值
 

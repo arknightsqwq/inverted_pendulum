@@ -108,6 +108,8 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim3);
   pclink.send("tim3 started\n");
   pclink.send("init done\n");
+  ssd1306_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -116,19 +118,46 @@ int main(void)
   {
     update_all_buttons(button1, button2, button3, button4);
     process_all_buttons(button1, button2, button3, button4);
-    /* 每秒自增目标位置并打印 ISR 频率 */{
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%.2f,%.2f,%.2f,%d\n",
+                    anglePID.target,
+                    sensor.get_degree(),
+                    anglePID.get_integral(),
+                    static_cast<int>(pid_isr_count));
+    pclink.send(buf);
+    /* 每10ms打印串口，每200ms刷新OLED */{
         static uint32_t last_tick = 0;
+        static uint32_t last_oled_tick = 0;
         uint32_t now = HAL_GetTick();
+        char buf[64];
         if (now - last_tick >= 10) {
             last_tick = now;
-
-            char buf[64];
-            snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
+            /*snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
                      anglePID.target,
                      sensor.get_degree(),
                      static_cast<int>(pid_isr_count));
-            pclink.send(buf);
+            pclink.send(buf);*/
             pid_isr_count = 0;
+        }
+        if (now - last_oled_tick >= 200) {
+            last_oled_tick = now;
+            ssd1306_Fill(Black);
+            ssd1306_SetCursor(0, 0);
+            snprintf(buf, sizeof(buf), "Kp:%.2f", anglePID.kp);
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_SetCursor(0, 12);
+            snprintf(buf, sizeof(buf), "Ki:%.2f", anglePID.ki);
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_SetCursor(0, 24);
+            snprintf(buf, sizeof(buf), "Kd:%.2f", anglePID.kd);
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_SetCursor(0, 36);
+            snprintf(buf, sizeof(buf), "Target:%.1f", anglePID.target);
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_SetCursor(0, 48);
+            snprintf(buf, sizeof(buf), "Angle:%.1f", sensor.get_degree());
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_UpdateScreen();
         }
     }
     /* USER CODE END WHILE */

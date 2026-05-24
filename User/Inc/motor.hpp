@@ -32,7 +32,7 @@ public:
     float get_angular_velocity();
 
     // 设置 PWM 占空比 (-100 到 100)
-    void set_pwm(int8_t duty_cycle);
+    void set_pwm(float duty_cycle);
 
     // 启动硬件外设
     void start();

@@ -32,7 +32,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         float angle = sensor.get_degree();
         if (angle > 90.0f && angle < 270.0f) {
             auto pwm = anglePID.calculate(angle);
-            motor.set_pwm(static_cast<int8_t>(pwm));
+            motor.set_pwm(pwm);
         } else {
             motor.set_pwm(0);
             anglePID.reset();
