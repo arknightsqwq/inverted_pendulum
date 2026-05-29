@@ -43,9 +43,9 @@
 #define SSD1306_SW_I2C_SCL_Pin    GPIO_PIN_6
 #define SSD1306_SW_I2C_SDA_Port   GPIOB
 #define SSD1306_SW_I2C_SDA_Pin    GPIO_PIN_7
-// 半周期延时循环次数（需根据 MCU 主频调节，目标 ~5us → 100kHz）
-// STM32F103 @72MHz: ~72  → 实测接近 100kHz
-#define SSD1306_SW_I2C_DELAY_COUNT 72
+// 半周期延时循环次数（需根据 MCU 主频调节）
+// STM32F103 @72MHz: ~8 → 约 350kHz（SSD1306 支持 400kHz Fast Mode）
+#define SSD1306_SW_I2C_DELAY_COUNT 8
 
 // --- SPI 配置 ---
 // #define SSD1306_SPI_PORT    hspi1
@@ -60,8 +60,8 @@
 // 可选的屏幕调整
 // ============================================================================
 
-#define SSD1306_MIRROR_VERT
-#define SSD1306_MIRROR_HORIZ
+// #define SSD1306_MIRROR_VERT
+// #define SSD1306_MIRROR_HORIZ
 // #define SSD1306_INVERSE_COLOR
 // #define SSD1306_X_OFFSET
 // #define SSD1306_WIDTH  64

@@ -16,7 +16,7 @@ extern "C" {
  *         ADC 角度  → [角度PID] → PWM → 电机
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM3) {
+    if (htim->Instance == TIM1) {
         pid_isr_count++;
 
         static uint8_t pos_cnt = 0;
@@ -29,14 +29,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         }*/
 
         //内环 1kHz
-        float angle = sensor.get_degree();
+        /*float angle = sensor.get_degree();
         if (angle > 90.0f && angle < 270.0f) {
             auto pwm = anglePID.calculate(angle);
             motor.set_pwm(pwm);
         } else {
             motor.set_pwm(0);
             anglePID.reset();
-        }
+        }*/
 
         //=== 单环位置 PID（测试用）===
         /*positionPID.target = 20;

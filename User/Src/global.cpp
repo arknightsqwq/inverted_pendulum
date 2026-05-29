@@ -18,19 +18,19 @@ template <> void Button<4>::process_event();
 //角度传感器
 DegreeSensor sensor(&hadc1, 0.3, 1050);  // bias = 4096 - 3046（最下方原生值）
 
-//电机（TIM1_CH2 -> PA9；方向 PB0 / PB1）
-Motor motor(&htim2, &htim1, TIM_CHANNEL_2,
-             GPIOB, GPIO_PIN_0,
-             GPIOB, GPIO_PIN_1, 3040);
+//电机
+Motor motor(&htim3, &htim2, TIM_CHANNEL_1,
+             GPIOB, GPIO_PIN_12,
+             GPIOB, GPIO_PIN_13, 3040);
 
 //串口
-UART_Object pclink(&huart2);
+UART_Object pclink(&huart1);
 
 //按钮
-Button<1> button1(GPIOB,GPIO_PIN_5,GPIO_PIN_RESET);
-Button<2> button2(GPIOB,GPIO_PIN_8,GPIO_PIN_RESET);
-Button<3> button3(GPIOB,GPIO_PIN_13,GPIO_PIN_RESET);
-Button<4> button4(GPIOB,GPIO_PIN_14,GPIO_PIN_RESET);
+Button<1> button1(GPIOB,GPIO_PIN_10,GPIO_PIN_RESET);
+Button<2> button2(GPIOB,GPIO_PIN_11,GPIO_PIN_RESET);
+Button<3> button3(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
+Button<4> button4(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
 
 //PID
 PID anglePID(4.0f, 0.05f, 2.0f, -100.0f, 100.0f, 200, 170.6);

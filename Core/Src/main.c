@@ -95,19 +95,15 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_I2C1_Init();
-  MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_TIM2_Init();
   MX_TIM1_Init();
   MX_ADC1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   sensor.start();
   motor.start();
-  pclink.send("before ssd1306\n");
-  pclink.send("starting tim3...\n");
-  HAL_TIM_Base_Start_IT(&htim3);
-  pclink.send("tim3 started\n");
-  pclink.send("init done\n");
+  HAL_TIM_Base_Start_IT(&htim1);
   ssd1306_Init();
 
   /* USER CODE END 2 */
@@ -129,7 +125,6 @@ int main(void)
         static uint32_t last_tick = 0;
         static uint32_t last_oled_tick = 0;
         uint32_t now = HAL_GetTick();
-        char buf[64];
         if (now - last_tick >= 10) {
             last_tick = now;
             /*snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
@@ -146,6 +141,7 @@ int main(void)
             snprintf(buf, sizeof(buf), "Kp:%.2f", anglePID.kp);
             ssd1306_WriteString(buf, Font_7x10, White);
             ssd1306_SetCursor(0, 12);
+
             snprintf(buf, sizeof(buf), "Ki:%.2f", anglePID.ki);
             ssd1306_WriteString(buf, Font_7x10, White);
             ssd1306_SetCursor(0, 24);
@@ -161,7 +157,6 @@ int main(void)
         }
     }
     /* USER CODE END WHILE */
-
 
     /* USER CODE BEGIN 3 */
 

@@ -12,7 +12,7 @@ public:
     Button(GPIO_TypeDef* port, uint16_t pin, GPIO_PinState active_lvl)
         : _port(port), _pin(pin), _active_lvl(active_lvl),
           _state(IDLE), _event(NONE), _start_tick(0), _holding_tick(0),
-          _debounce_ms(20), _long_press_ms(400), _holding_interval_ms(100) {}
+          _debounce_ms(20), _long_press_ms(400), _holding_interval_ms(200) {}
 
     // 非阻塞状态机，每次调用推进一次，需在主循环或定时器中周期性调用
     void update() {
