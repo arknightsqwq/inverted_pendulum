@@ -79,6 +79,23 @@ extern "C" {
 #define SSD1306_I2C_ADDR (0x3C << 1)
 #endif
 
+// 软件 I2C 引脚默认值
+#ifndef SSD1306_SW_I2C_SCL_Port
+#define SSD1306_SW_I2C_SCL_Port   GPIOB
+#endif
+#ifndef SSD1306_SW_I2C_SCL_Pin
+#define SSD1306_SW_I2C_SCL_Pin    GPIO_PIN_6
+#endif
+#ifndef SSD1306_SW_I2C_SDA_Port
+#define SSD1306_SW_I2C_SDA_Port   GPIOB
+#endif
+#ifndef SSD1306_SW_I2C_SDA_Pin
+#define SSD1306_SW_I2C_SDA_Pin    GPIO_PIN_7
+#endif
+#ifndef SSD1306_SW_I2C_DELAY_COUNT
+#define SSD1306_SW_I2C_DELAY_COUNT 72
+#endif
+
 #ifndef SSD1306_SPI_PORT
 #define SSD1306_SPI_PORT hspi2
 #endif
@@ -105,8 +122,8 @@ extern "C" {
 extern I2C_HandleTypeDef SSD1306_I2C_PORT;
 #elif defined(SSD1306_USE_SPI)
 extern SPI_HandleTypeDef SSD1306_SPI_PORT;
-#else
-#error "You should define SSD1306_USE_SPI or SSD1306_USE_I2C macro!"
+#elif !defined(SSD1306_USE_SW_I2C)
+#error "You should define SSD1306_USE_SPI, SSD1306_USE_I2C, or SSD1306_USE_SW_I2C macro"
 #endif
 
 // ============================================================================
@@ -283,6 +300,9 @@ uint8_t ssd1306_GetDisplayOn(void);
 
 /** @brief 硬件复位 */
 void ssd1306_Reset(void);
+
+/** @brief 初始化软件 I2C 的 GPIO 引脚（仅 SSD1306_USE_SW_I2C 模式下有效） */
+void ssd1306_SwI2cInit(void);
 
 /** @brief 发送命令字节 */
 void ssd1306_WriteCommand(uint8_t byte);

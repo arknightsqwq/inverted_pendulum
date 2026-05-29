@@ -53,7 +53,7 @@ static void _draw_hline(int32_t x1, int32_t x2, int32_t y,
 }
 
 // ============================================================================
-// 对外接口 — 硬件 I/O（I2C / SPI 二选一）
+// 对外接口 — 硬件 I/O（I2C / 软件 I2C / SPI 三选一）
 // ============================================================================
 
 #if defined(SSD1306_USE_I2C)
@@ -70,6 +70,158 @@ void ssd1306_WriteCommand(uint8_t byte) {
 void ssd1306_WriteData(uint8_t *buffer, size_t buff_size) {
     HAL_I2C_Mem_Write(&SSD1306_I2C_PORT, SSD1306_I2C_ADDR,
                       0x40, 1, buffer, buff_size, 100);
+}
+
+#elif defined(SSD1306_USE_SW_I2C)
+
+// ============================================================================
+// 软件 I2C 底层原语
+// ============================================================================
+
+/** @brief 半周期延时 */
+static void sw_i2c_delay(void) {
+    for (volatile uint32_t i = 0; i < SSD1306_SW_I2C_DELAY_COUNT; i++) {
+        __NOP();
+    }
+}
+
+static void sw_i2c_scl_low(void) {
+    HAL_GPIO_WritePin(SSD1306_SW_I2C_SCL_Port, SSD1306_SW_I2C_SCL_Pin,
+                      GPIO_PIN_RESET);
+}
+
+static void sw_i2c_scl_high(void) {
+    HAL_GPIO_WritePin(SSD1306_SW_I2C_SCL_Port, SSD1306_SW_I2C_SCL_Pin,
+                      GPIO_PIN_SET);
+}
+
+static void sw_i2c_sda_low(void) {
+    HAL_GPIO_WritePin(SSD1306_SW_I2C_SDA_Port, SSD1306_SW_I2C_SDA_Pin,
+                      GPIO_PIN_RESET);
+}
+
+static void sw_i2c_sda_high(void) {
+    HAL_GPIO_WritePin(SSD1306_SW_I2C_SDA_Port, SSD1306_SW_I2C_SDA_Pin,
+                      GPIO_PIN_SET);
+}
+
+static uint8_t sw_i2c_sda_read(void) {
+    return HAL_GPIO_ReadPin(SSD1306_SW_I2C_SDA_Port, SSD1306_SW_I2C_SDA_Pin);
+}
+
+/** @brief 发送 I2C 起始条件 */
+static void sw_i2c_start(void) {
+    sw_i2c_sda_high();
+    sw_i2c_scl_high();
+    sw_i2c_delay();
+    sw_i2c_sda_low();
+    sw_i2c_delay();
+    sw_i2c_scl_low();
+}
+
+/** @brief 发送 I2C 停止条件 */
+static void sw_i2c_stop(void) {
+    sw_i2c_sda_low();
+    sw_i2c_scl_high();
+    sw_i2c_delay();
+    sw_i2c_sda_high();
+    sw_i2c_delay();
+}
+
+/**
+ * @brief 通过软件 I2C 发送一个字节
+ * @return SDA 在 ACK 位期间的电平（0 = ACK, 非 0 = NACK）
+ */
+static uint8_t sw_i2c_write_byte(uint8_t byte) {
+    for (uint8_t i = 0; i < 8; i++) {
+        if (byte & 0x80) {
+            sw_i2c_sda_high();
+        } else {
+            sw_i2c_sda_low();
+        }
+        sw_i2c_delay();
+        sw_i2c_scl_high();
+        sw_i2c_delay();
+        sw_i2c_scl_low();
+        byte <<= 1;
+    }
+    // 释放 SDA 并读取 ACK
+    sw_i2c_sda_high();
+    sw_i2c_delay();
+    sw_i2c_scl_high();
+    sw_i2c_delay();
+    uint8_t ack = sw_i2c_sda_read();
+    sw_i2c_scl_low();
+    sw_i2c_delay();
+    return ack;
+}
+
+// ============================================================================
+// 对外接口 — 软件 I2C 版本
+// ============================================================================
+
+/** @brief 将 SCL/SDA 引脚配置为开漏输出（需板上 4.7kΩ 上拉电阻）
+ *
+ *  若使用非 GPIOA/B/C 的端口，请自行在 main.c 中配置引脚并跳过此函数。
+ */
+void ssd1306_SwI2cInit(void) {
+    GPIO_InitTypeDef gpio = {0};
+
+    // 使能 SCL 所在端口的时钟
+    if (SSD1306_SW_I2C_SCL_Port == GPIOA) {
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+    } else if (SSD1306_SW_I2C_SCL_Port == GPIOB) {
+        __HAL_RCC_GPIOB_CLK_ENABLE();
+    } else if (SSD1306_SW_I2C_SCL_Port == GPIOC) {
+        __HAL_RCC_GPIOC_CLK_ENABLE();
+    }
+
+    // 若 SDA 在不同端口，使能其时钟
+    if (SSD1306_SW_I2C_SDA_Port != SSD1306_SW_I2C_SCL_Port) {
+        if (SSD1306_SW_I2C_SDA_Port == GPIOA) {
+            __HAL_RCC_GPIOA_CLK_ENABLE();
+        } else if (SSD1306_SW_I2C_SDA_Port == GPIOB) {
+            __HAL_RCC_GPIOB_CLK_ENABLE();
+        } else if (SSD1306_SW_I2C_SDA_Port == GPIOC) {
+            __HAL_RCC_GPIOC_CLK_ENABLE();
+        }
+    }
+
+    gpio.Mode  = GPIO_MODE_OUTPUT_OD;
+    gpio.Pull  = GPIO_NOPULL;
+    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+
+    gpio.Pin = SSD1306_SW_I2C_SCL_Pin;
+    HAL_GPIO_Init(SSD1306_SW_I2C_SCL_Port, &gpio);
+
+    gpio.Pin = SSD1306_SW_I2C_SDA_Pin;
+    HAL_GPIO_Init(SSD1306_SW_I2C_SDA_Port, &gpio);
+
+    // 释放总线（高电平由外部/内部上拉电阻提供）
+    sw_i2c_scl_high();
+    sw_i2c_sda_high();
+}
+
+void ssd1306_Reset(void) {
+    // 软件 I2C 模式下无需额外复位操作
+}
+
+void ssd1306_WriteCommand(uint8_t byte) {
+    sw_i2c_start();
+    sw_i2c_write_byte(SSD1306_I2C_ADDR);
+    sw_i2c_write_byte(0x00);
+    sw_i2c_write_byte(byte);
+    sw_i2c_stop();
+}
+
+void ssd1306_WriteData(uint8_t *buffer, size_t buff_size) {
+    sw_i2c_start();
+    sw_i2c_write_byte(SSD1306_I2C_ADDR);
+    sw_i2c_write_byte(0x40);
+    for (size_t i = 0; i < buff_size; i++) {
+        sw_i2c_write_byte(buffer[i]);
+    }
+    sw_i2c_stop();
 }
 
 #elif defined(SSD1306_USE_SPI)
@@ -97,7 +249,7 @@ void ssd1306_WriteData(uint8_t *buffer, size_t buff_size) {
 }
 
 #else
-#error "You should define SSD1306_USE_SPI or SSD1306_USE_I2C macro"
+#error "You should define SSD1306_USE_SPI, SSD1306_USE_I2C, or SSD1306_USE_SW_I2C macro"
 #endif
 
 // ============================================================================
