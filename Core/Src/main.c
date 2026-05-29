@@ -140,18 +140,20 @@ int main(void)
             ssd1306_SetCursor(0, 0);
             snprintf(buf, sizeof(buf), "Kp:%.2f", anglePID.kp);
             ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 12);
-
+            ssd1306_SetCursor(0, 10);
             snprintf(buf, sizeof(buf), "Ki:%.2f", anglePID.ki);
             ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 24);
+            ssd1306_SetCursor(0, 20);
             snprintf(buf, sizeof(buf), "Kd:%.2f", anglePID.kd);
             ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 36);
+            ssd1306_SetCursor(0, 30);
             snprintf(buf, sizeof(buf), "Target:%.1f", anglePID.target);
             ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 48);
+            ssd1306_SetCursor(0, 40);
             snprintf(buf, sizeof(buf), "Angle:%.1f", sensor.get_degree());
+            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_SetCursor(0, 50);
+            snprintf(buf, sizeof(buf), "Enc:%d", motor.get_location());
             ssd1306_WriteString(buf, Font_7x10, White);
             ssd1306_UpdateScreen();
         }

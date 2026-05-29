@@ -38,18 +38,20 @@ PID positionPID(5.0f, 0.0f, 5.0f, -30.0f, 30.0f, 30, 20);
 
 volatile uint32_t pid_isr_count = 0;
 
+static float step_scale = 1.0f;  // 1.0 → 粗调 (kp/ki/kd: 0.1/0.05/0.1), 0.1 → 细调 (0.01/0.005/0.01)
+
 // --- 各按钮事件处理特化 ---
 
 template <>
 void Button<1>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS:
-        anglePID.kp += 0.1f;
+        anglePID.kp += 0.1f * step_scale;
         anglePID.sync();
         break;
     case LONG_PRESS:  break;
     case HOLDING:
-        anglePID.kp -= 0.1f;
+        anglePID.kp -= 0.1f * step_scale;
         anglePID.sync();
         break;
     default:          break;
@@ -61,12 +63,12 @@ template <>
 void Button<2>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS:
-        anglePID.ki += 0.05f;
+        anglePID.ki += 0.05f * step_scale;
         anglePID.sync();
         break;
     case LONG_PRESS:  break;
     case HOLDING:
-        anglePID.ki -= 0.05;
+        anglePID.ki -= 0.05f * step_scale;
         anglePID.sync();
         break;
     default:          break;
@@ -77,12 +79,12 @@ template <>
 void Button<3>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS:
-        anglePID.kd += 0.1f;
+        anglePID.kd += 0.1f * step_scale;
         anglePID.sync();
         break;
     case LONG_PRESS:  break;
     case HOLDING:
-        anglePID.kd -= 0.1f;
+        anglePID.kd -= 0.1f * step_scale;
         anglePID.sync();
         break;
     default:          break;
@@ -92,19 +94,9 @@ void Button<3>::process_event() {
 template <>
 void Button<4>::process_event() {
     switch (get_event()) {
-    case SHORT_PRESS: {
-        static bool running = true;
-        if (running) {
-            HAL_TIM_Base_Stop_IT(&htim3);
-            motor.set_pwm(0);
-            //pclink.send("ISR off\n");
-        } else {
-            HAL_TIM_Base_Start_IT(&htim3);
-            //pclink.send("ISR on\n");
-        }
-        running = !running;
+    case SHORT_PRESS:
+        step_scale = (step_scale == 1.0f) ? 0.1f : 1.0f;
         break;
-    }
     case LONG_PRESS:  break;
     case HOLDING:     break;
     default:          break;
