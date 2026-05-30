@@ -26,4 +26,5 @@ extern PID positionPID;
 
 extern volatile uint32_t pid_isr_count;
 
+extern volatile bool is_pid_running;
 #endif // GLOBAL_HPP

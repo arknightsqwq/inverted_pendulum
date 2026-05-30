@@ -44,13 +44,6 @@ float Motor::get_angle() const {
     return static_cast<float>(get_location()) / _counts_per_rev * 360.0f;
 }
 
-float Motor::get_angular_velocity() {
-    // get_speed() 返回每调用间隔的计数值变化量
-    // 调用间隔通常为 1ms (ISR 频率)，乘以 1000 得到 counts/s
-    // 再映射到度/秒
-    return static_cast<float>(get_speed()) * 1000.0f / _counts_per_rev * 360.0f;
-}
-
 void Motor::set_pwm(float duty_cycle) {
     uint32_t arr = __HAL_TIM_GET_AUTORELOAD(_htim_driver);
     float abs_duty = duty_cycle > 0 ? duty_cycle : -duty_cycle;

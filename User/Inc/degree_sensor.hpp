@@ -21,7 +21,7 @@ public:
      * @brief 获取滤波后的角度值
      * @return 角度 (0~360°)，映射自 ADC 0~4095
      */
-    float get_degree();
+    float get_angle();
 
     /**
      * @brief 获取原生角度值

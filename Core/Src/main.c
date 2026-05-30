@@ -30,6 +30,7 @@
 #include "global.hpp"
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -114,50 +115,59 @@ int main(void)
   {
     update_all_buttons(button1, button2, button3, button4);
     process_all_buttons(button1, button2, button3, button4);
-    char buf[64];
-    snprintf(buf, sizeof(buf), "%.2f,%.2f,%.2f,%d\n",
-                    anglePID.target,
-                    sensor.get_degree(),
-                    anglePID.get_integral(),
-                    static_cast<int>(pid_isr_count));
-    pclink.send(buf);
-    /* 每10ms打印串口，每200ms刷新OLED */{
-        static uint32_t last_tick = 0;
-        static uint32_t last_oled_tick = 0;
-        uint32_t now = HAL_GetTick();
-        if (now - last_tick >= 10) {
-            last_tick = now;
-            /*snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
-                     anglePID.target,
-                     sensor.get_degree(),
-                     static_cast<int>(pid_isr_count));
-            pclink.send(buf);*/
-            pid_isr_count = 0;
-        }
-        if (now - last_oled_tick >= 200) {
-            last_oled_tick = now;
-            ssd1306_Fill(Black);
-            ssd1306_SetCursor(0, 0);
-            snprintf(buf, sizeof(buf), "Kp:%.2f", anglePID.kp);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 10);
-            snprintf(buf, sizeof(buf), "Ki:%.2f", anglePID.ki);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 20);
-            snprintf(buf, sizeof(buf), "Kd:%.2f", anglePID.kd);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 30);
-            snprintf(buf, sizeof(buf), "Target:%.1f", anglePID.target);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 40);
-            snprintf(buf, sizeof(buf), "Angle:%.1f", sensor.get_degree());
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 50);
-            snprintf(buf, sizeof(buf), "Enc:%d", motor.get_location());
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_UpdateScreen();
-        }
-    }
+
+    char buf[16];
+
+    //=== 左侧：角度 PID ===
+    ssd1306_SetCursor(0, 0);
+    ssd1306_WriteString("Angle", Font_6x8, White);
+
+    ssd1306_SetCursor(0, 12);
+    snprintf(buf, sizeof(buf), "Kp:%05.3f", (double)anglePID.kp);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(0, 20);
+    snprintf(buf, sizeof(buf), "Ki:%05.3f", (double)anglePID.ki);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(0, 28);
+    snprintf(buf, sizeof(buf), "Kd:%05.3f", (double)anglePID.kd);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(0, 40);
+    snprintf(buf, sizeof(buf), "Tar:%04.0f", (double)anglePID.target);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(0, 48);
+    snprintf(buf, sizeof(buf), "Act:%04d", (int)sensor.get_angle());
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    //=== 右侧：位置 PID ===
+    ssd1306_SetCursor(64, 0);
+    ssd1306_WriteString("Location", Font_6x8, White);
+
+    ssd1306_SetCursor(64, 12);
+    snprintf(buf, sizeof(buf), "Kp:%05.3f", (double)positionPID.kp);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(64, 20);
+    snprintf(buf, sizeof(buf), "Ki:%05.3f", (double)positionPID.ki);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(64, 28);
+    snprintf(buf, sizeof(buf), "Kd:%05.3f", (double)positionPID.kd);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(64, 40);
+    snprintf(buf, sizeof(buf), "Tar:%.2f", (double)positionPID.target);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_SetCursor(64, 48);
+    snprintf(buf, sizeof(buf), "Act:%.2f", motor.get_angle());
+    ssd1306_WriteString(buf, Font_6x8, White);
+
+    ssd1306_UpdateScreen();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

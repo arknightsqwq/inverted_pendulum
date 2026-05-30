@@ -13,7 +13,7 @@ void DegreeSensor::start() {
     HAL_ADC_Start_DMA(_hadc, reinterpret_cast<uint32_t*>(&_adc_buf), 1);
 }
 
-float DegreeSensor::get_degree() {
+float DegreeSensor::get_angle() {
     int raw = static_cast<int>(_adc_buf);
     // 一阶低通滤波: last += alpha * (raw - last), Q12 定点
     int diff = raw - _last_val;

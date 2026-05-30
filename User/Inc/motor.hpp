@@ -27,10 +27,7 @@ public:
 
     // 获取角度（度），映射自编码器计数值
     float get_angle() const;
-
-    // 获取角速度（度/秒），映射自编码器变化量
-    float get_angular_velocity();
-
+    
     // 设置 PWM 占空比 (-100 到 100)
     void set_pwm(float duty_cycle);
 
