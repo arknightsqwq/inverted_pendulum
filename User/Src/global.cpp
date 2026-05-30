@@ -29,7 +29,7 @@ Button<4> button4(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
 
 //PID
 PID anglePID(2.28f, 0.114f, 4.55f, -100.0f, 100.0f, 200, 179.0);
-PID positionPID(0.0f, 0.0f, 0.0f, -30.0f, 30.0f, 30, 0);
+PID positionPID(0.0047f, 0.0f, 0.047f, -9.0f, 9.0f, 30, 0);
 
 volatile uint32_t pid_isr_count = 0;
 
