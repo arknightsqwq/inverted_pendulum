@@ -115,9 +115,9 @@ int main(void)
     update_all_buttons(button1, button2, button3, button4);
     process_all_buttons(button1, button2, button3, button4);
     char buf[64];
-    snprintf(buf, sizeof(buf), "%.2f,%.2f,%.2f,%d\n",
+    snprintf(buf, sizeof(buf), "%.0f,%d,%.2f,%d\n",
                     anglePID.target,
-                    sensor.get_degree(),
+                    g_angle,
                     anglePID.get_integral(),
                     static_cast<int>(pid_isr_count));
     pclink.send(buf);
@@ -129,7 +129,7 @@ int main(void)
             last_tick = now;
             /*snprintf(buf, sizeof(buf), "%.2f,%.2f,%d\n",
                      anglePID.target,
-                     sensor.get_degree(),
+                     sensor.get_angle(),
                      static_cast<int>(pid_isr_count));
             pclink.send(buf);*/
             pid_isr_count = 0;
@@ -137,24 +137,68 @@ int main(void)
         if (now - last_oled_tick >= 200) {
             last_oled_tick = now;
             ssd1306_Fill(Black);
+
+            // 运行状态（右上）
+            snprintf(buf, sizeof(buf), "%d", is_pid_running);
+            ssd1306_SetCursor(42, 0);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            // ===== 左侧 — 角度环 =====
             ssd1306_SetCursor(0, 0);
-            snprintf(buf, sizeof(buf), "Kp:%.2f", anglePID.kp);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 10);
-            snprintf(buf, sizeof(buf), "Ki:%.2f", anglePID.ki);
-            ssd1306_WriteString(buf, Font_7x10, White);
+            ssd1306_WriteString("Angle", Font_6x8, White);
+
+            ssd1306_SetCursor(0, 12);
+            snprintf(buf, sizeof(buf), "Kp:%05.3f", anglePID.kp);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
             ssd1306_SetCursor(0, 20);
-            snprintf(buf, sizeof(buf), "Kd:%.2f", anglePID.kd);
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 30);
-            snprintf(buf, sizeof(buf), "Target:%.1f", anglePID.target);
-            ssd1306_WriteString(buf, Font_7x10, White);
+            snprintf(buf, sizeof(buf), "Ki:%05.3f", anglePID.ki);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(0, 28);
+            snprintf(buf, sizeof(buf), "Kd:%05.3f", anglePID.kd);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
             ssd1306_SetCursor(0, 40);
-            snprintf(buf, sizeof(buf), "Angle:%.1f", sensor.get_degree());
-            ssd1306_WriteString(buf, Font_7x10, White);
-            ssd1306_SetCursor(0, 50);
-            snprintf(buf, sizeof(buf), "Enc:%d", motor.get_location());
-            ssd1306_WriteString(buf, Font_7x10, White);
+            snprintf(buf, sizeof(buf), "Tar:%04.0f", anglePID.target);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(0, 48);
+            snprintf(buf, sizeof(buf), "Act:%04d", g_angle);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(0, 56);
+            snprintf(buf, sizeof(buf), "Int:%+04.0f", anglePID.get_integral());
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            // ===== 右侧 — 位置环 =====
+            ssd1306_SetCursor(64, 0);
+            ssd1306_WriteString("Location", Font_6x8, White);
+
+            ssd1306_SetCursor(64, 12);
+            snprintf(buf, sizeof(buf), "Kp:%05.3f", positionPID.kp);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(64, 20);
+            snprintf(buf, sizeof(buf), "Ki:%05.3f", positionPID.ki);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(64, 28);
+            snprintf(buf, sizeof(buf), "Kd:%05.3f", positionPID.kd);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(64, 40);
+            snprintf(buf, sizeof(buf), "Tar:%+05.0f", positionPID.target);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(64, 48);
+            snprintf(buf, sizeof(buf), "Act:%+05d", g_location);
+            ssd1306_WriteString(buf, Font_6x8, White);
+
+            ssd1306_SetCursor(64, 56);
+            snprintf(buf, sizeof(buf), "Int:%+04.0f", positionPID.get_integral());
+            ssd1306_WriteString(buf, Font_6x8, White);
+
             ssd1306_UpdateScreen();
         }
     }

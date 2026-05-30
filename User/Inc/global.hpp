@@ -26,4 +26,10 @@ extern PID positionPID;
 
 extern volatile uint32_t pid_isr_count;
 
+extern volatile bool is_pid_running;
+
+// 传感器和位置全局值（ISR 更新，主循环只读，避免反复调用 get_raw 破坏滤波器）
+extern volatile int g_angle;
+extern volatile int16_t g_location;
+
 #endif // GLOBAL_HPP

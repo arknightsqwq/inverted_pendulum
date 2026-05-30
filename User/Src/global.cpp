@@ -16,12 +16,12 @@ template <> void Button<3>::process_event();
 template <> void Button<4>::process_event();
 
 //角度传感器
-DegreeSensor sensor(&hadc1, 0.3, 1050);  // bias = 4096 - 3046（最下方原生值）
+DegreeSensor sensor(&hadc1, 1, 0);  // 无偏置，ADC 0~4096 直接映射 0~360°
 
 //电机
 Motor motor(&htim3, &htim2, TIM_CHANNEL_1,
              GPIOB, GPIO_PIN_12,
-             GPIOB, GPIO_PIN_13, 3040);
+             GPIOB, GPIO_PIN_13, 408);  // 编码器 408 计数/圈，映射 0~360°
 
 //串口
 UART_Object pclink(&huart1);
@@ -33,10 +33,19 @@ Button<3> button3(GPIOA,GPIO_PIN_11,GPIO_PIN_RESET);
 Button<4> button4(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
 
 //PID
-PID anglePID(4.0f, 0.05f, 2.0f, -100.0f, 100.0f, 200, 170.6);
-PID positionPID(5.0f, 0.0f, 5.0f, -30.0f, 30.0f, 30, 20);
+//内环角度PID：输入 ADC计数值 → 输出 %PWM，运行频率 200Hz
+PID anglePID(0.2f, 0.01f, 0.4f,
+             -100.0f, 100.0f, 5000.0f, 2056.0f);
+//外环位置PID：输入 编码器计数值 → 输出 ADC偏置，运行频率 200Hz
+PID positionPID(0.4f, 0.0f, 4.0f,
+                -100.0f, 100.0f, 500.0f, 0.0f);
 
 volatile uint32_t pid_isr_count = 0;
+
+volatile bool is_pid_running = false;
+
+volatile int g_angle = 0;
+volatile int16_t g_location = 0;
 
 static float step_scale = 1.0f;  // 1.0 → 粗调 (kp/ki/kd: 0.1/0.05/0.1), 0.1 → 细调 (0.01/0.005/0.01)
 
@@ -95,7 +104,7 @@ template <>
 void Button<4>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS:
-        step_scale = (step_scale == 1.0f) ? 0.1f : 1.0f;
+        is_pid_running = !is_pid_running;
         break;
     case LONG_PRESS:  break;
     case HOLDING:     break;
