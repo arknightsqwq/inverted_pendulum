@@ -3,7 +3,7 @@
 
 // 内环 200Hz (÷5)，外环 20Hz (÷50)，TIM1 基频 1kHz
 #define ANGLE_DOWNSAMPLE  5
-#define POS_DOWNSAMPLE    50
+#define POS_DOWNSAMPLE    20
 
 extern "C" {
 
@@ -23,9 +23,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         if (++angle_cnt >= ANGLE_DOWNSAMPLE) {
             angle_cnt = 0;
 
-            float angle = sensor.get_angle();
-            if (is_pid_running && angle > 160.0f && angle < 200.0f) {
-                auto pwm = anglePID.calculate(angle);
+            float sensor_angle = sensor.get_angle();
+            if (is_pid_running && sensor_angle > 150.0f && sensor_angle < 210.0f) {
+                auto pwm = anglePID.calculate(sensor_angle);
                 motor.set_pwm(pwm);
             } else {
                 is_pid_running = false;
@@ -39,8 +39,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
         if (++pos_cnt >= POS_DOWNSAMPLE) {
             pos_cnt = 0;
 
+            float motor_angle = motor.get_angle();
             if (is_pid_running) {
-                anglePID.target = 179.0f + positionPID.calculate(motor.get_angle());
+                anglePID.target = 179.0f + positionPID.calculate(motor_angle);
             }
         }
     }
