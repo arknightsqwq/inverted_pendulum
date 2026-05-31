@@ -118,6 +118,11 @@ int main(void)
 
     char buf[16];
 
+    //=== 状态 ===
+    ssd1306_SetCursor(42, 0);
+    snprintf(buf, sizeof(buf), "%02d", run_state);
+    ssd1306_WriteString(buf, Font_6x8, White);
+
     //=== 左侧：角度 PID ===
     ssd1306_SetCursor(0, 0);
     ssd1306_WriteString("Angle", Font_6x8, White);

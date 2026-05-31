@@ -30,11 +30,11 @@ Button<4> button4(GPIOA,GPIO_PIN_12,GPIO_PIN_RESET);
 //PID
 PID anglePID(2.28f, 0.114f, 4.55f, -100.0f, 100.0f, 200, 179.0);
 //PID positionPID(0.04f, 0.0f, 0.4f, -9.0f, 9.0f, 30, 0);
-PID positionPID(0.08f, 0.0f, 0.8f, -6.0f, 6.0f, 30, 0);
+PID positionPID(0.06f, 0.01f, 0.6f, -6.0f, 6.0f, 30, 0);
 
 volatile uint32_t pid_isr_count = 0;
 
-volatile bool is_pid_running = false;
+volatile uint8_t run_state = 0;
 
 template <>
 void Button<1>::process_event() {
@@ -81,7 +81,7 @@ template <>
 void Button<4>::process_event() {
     switch (get_event()) {
     case SHORT_PRESS:
-    is_pid_running = !is_pid_running;
+    run_state = (run_state == 0) ? 21 : 0;
         break;
     case LONG_PRESS:  break;
     case HOLDING:     break;
