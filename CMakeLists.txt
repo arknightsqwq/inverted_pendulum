@@ -40,6 +40,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Src/delay_us.c
         User/Src/global.cpp
         User/Src/interrupt.cpp
+        User/Src/swing_up.cpp
         User/Src/motor.cpp
         User/Src/pid.cpp
         User/Src/lqr.cpp
