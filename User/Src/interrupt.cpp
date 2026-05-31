@@ -40,8 +40,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
             pos_cnt = 0;
 
             if (is_pid_running) {
-                anglePID.target = 179.0f - positionPID.calculate(
-                    static_cast<float>(motor.get_location()));
+                anglePID.target = 179.0f + positionPID.calculate(motor.get_angle());
             }
         }
     }
