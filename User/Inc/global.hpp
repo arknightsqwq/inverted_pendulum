@@ -27,4 +27,5 @@ extern PID positionPID;
 extern volatile uint32_t pid_isr_count;
 
 extern volatile uint8_t run_state;
+extern volatile bool spin_mode;    // button2=转一圈, button4=起摆+PID
 #endif // GLOBAL_HPP
